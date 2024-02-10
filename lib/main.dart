@@ -1,3 +1,4 @@
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -37,5 +38,4 @@ void handleError(dynamic error, StackTrace stackTrace) {
   // Handle the error
   print('An error occurred: $error');
   // Show an error message or perform other actions
-
 }

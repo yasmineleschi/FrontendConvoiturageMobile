@@ -105,6 +105,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+<<<<<<< HEAD
   file_selector_linux:
     dependency: transitive
     description:
@@ -137,6 +138,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+1"
+=======
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
   flutter:
     dependency: "direct main"
     description: flutter
@@ -168,6 +171,7 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+<<<<<<< HEAD
   graphs:
     dependency: transitive
     description:
@@ -176,6 +180,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+=======
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
   http:
     dependency: "direct main"
     description:
@@ -185,13 +191,18 @@ packages:
     source: hosted
     version: "0.13.6"
   http_parser:
+<<<<<<< HEAD
     dependency: "direct main"
+=======
+    dependency: transitive
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
     description:
       name: http_parser
       sha256: "2aa08ce0341cc9b354a498388e30986515406668dbcc4f7c950c3e715496693b"
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+<<<<<<< HEAD
   image_picker:
     dependency: transitive
     description:
@@ -280,6 +291,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+=======
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
   lints:
     dependency: transitive
     description:
@@ -368,6 +381,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+<<<<<<< HEAD
   rive:
     dependency: transitive
     description:
@@ -384,6 +398,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.8"
+=======
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
   shared_preferences:
     dependency: "direct main"
     description:
@@ -428,10 +444,17 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_web
+<<<<<<< HEAD
       sha256: d762709c2bbe80626ecc819143013cc820fa49ca5e363620ee20a8b15a3e3daf
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+=======
+      sha256: "7b15ffb9387ea3e237bb7a66b8a23d2147663d391cafc5c8f37b2e7b4bde5d21"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.2"
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
   shared_preferences_windows:
     dependency: transitive
     description:
@@ -524,7 +547,11 @@ packages:
       sha256: eb6ac1540b26de412b3403a163d919ba86f6a973fe6cc50ae3541b80092fdcfb
       url: "https://pub.dev"
     source: hosted
+<<<<<<< HEAD
     version: "0.5.1"
+=======
+    version: "0.6.1"
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
   typed_data:
     dependency: transitive
     description:
@@ -548,7 +575,19 @@ packages:
       sha256: "350a11abd2d1d97e0cc7a28a81b781c08002aa2864d9e3f192ca0ffa18b06ed3"
       url: "https://pub.dev"
     source: hosted
+<<<<<<< HEAD
     version: "5.0.9"
+=======
+    version: "0.3.0"
+  win32:
+    dependency: transitive
+    description:
+      name: win32
+      sha256: "464f5674532865248444b4c3daca12bd9bf2d7c47f759ce2617986e7229494a8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.0"
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
   xdg_directories:
     dependency: transitive
     description:
@@ -558,5 +597,10 @@ packages:
     source: hosted
     version: "1.0.4"
 sdks:
+<<<<<<< HEAD
   dart: ">=3.0.5 <4.0.0"
   flutter: ">=3.10.0"
+=======
+  dart: ">=3.2.0 <4.0.0"
+  flutter: ">=3.16.0"
+>>>>>>> 2319616aea930cc26a7c168f73b314b6cbad1722
