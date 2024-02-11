@@ -1,42 +1,43 @@
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'login.dart';
+import 'package:frontendcovoituragemobile/pages/home.dart';
+import 'package:frontendcovoituragemobile/pages/signup_page.dart';
+import 'package:frontendcovoituragemobile/pages/login.dart';
+import 'package:frontendcovoituragemobile/pages/profile.dart';
+import 'package:frontendcovoituragemobile/pages/splash_animated_page.dart';
 
+Future<void> main() async {
+  runApp(const MyApp());
 
-
-void main() => runApp(const MyApp());
-
+}
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  static const String _title = 'Sample App';
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: _title,
-      home: Navigator( // Wrap the Scaffold with a Navigator
-        onGenerateRoute: (settings) {
-          return MaterialPageRoute(
-            builder: (context) => Scaffold(
-              appBar: AppBar(title: const Text(_title)),
-              body: Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()), // Navigate to the login page
-                    );
-                  },
-                  child: Text(
-                    'Go to Login Page',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.lightBlue,
       ),
+
+      routes: {
+        '/': (context) => AnimatedSplashScreen(), // Adjusted to AnimatedSplashScreen
+        '/login': (context) => const LoginPage(),
+        '/signup': (context) => const SignupPage(),
+        '/home': (context) => HomePage(),
+        '/profile': (context) => ProfilPage(),
+
+      },
     );
   }
+}
+
+void handleError(dynamic error, StackTrace stackTrace) {
+  // Handle the error
+  print('An error occurred: $error');
+  // Show an error message or perform other actions
 }
