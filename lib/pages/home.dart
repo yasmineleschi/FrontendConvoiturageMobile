@@ -16,14 +16,14 @@ class HomePage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => ProfilPage()), // Navigate to the profile page
               );
             },
-            icon: CircleAvatar(
+            icon: const CircleAvatar(
               // Placeholder user image (replace with actual user image)
-              backgroundImage: AssetImage('assets/img.png'),
+              backgroundImage: AssetImage('assets/images/car.png'),
             ),
           ),
         ],
       ),
-      body: Center(
+      body: const Center(
         child: Text(
           'Welcome to the Home Page!',
           style: TextStyle(

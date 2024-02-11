@@ -2,15 +2,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:frontendcovoituragemobile/pages/home_page.dart';
+import 'package:frontendcovoituragemobile/pages/home.dart';
 import 'package:frontendcovoituragemobile/pages/signup_page.dart';
+import 'package:frontendcovoituragemobile/pages/login.dart';
+import 'package:frontendcovoituragemobile/pages/profile.dart';
+import 'package:frontendcovoituragemobile/pages/splash_animated_page.dart';
 
 Future<void> main() async {
   runApp(const MyApp());
 
 }
-
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -22,12 +23,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.lightBlue,
       ),
+
       routes: {
-        '/' : (context) => const SignupPage(),
-        '/home' : (context) => const HomePage(),
-        '/profile' : (context) => const HomePage(),
-
-
+        '/': (context) => AnimatedSplashScreen(), // Adjusted to AnimatedSplashScreen
+        '/login': (context) => const LoginPage(),
+        '/signup': (context) => const SignupPage(),
+        '/home': (context) => HomePage(),
+        '/profile': (context) => ProfilPage(),
 
       },
     );

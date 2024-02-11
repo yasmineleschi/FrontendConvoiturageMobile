@@ -21,12 +21,14 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-        backgroundColor: Color(0xFFD9D9D9),
-      ),
+
       body: Container(
-        color: Color(0xFFD9D9D9),
+        decoration: const  BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("images/back.png"),
+            fit: BoxFit.fill,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: ListView(
@@ -36,10 +38,11 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
+                    SizedBox(height: 120,),
                     Image.asset(
-                      'assets/img.png',
-                      width: 100,
-                      height: 100,
+                      'assets/images/car.png',
+                      width: 120,
+                      height: 120,
                     ),
                     const SizedBox(height: 10),
                     const Text(
@@ -90,22 +93,26 @@ class _LoginPageState extends State<LoginPage> {
               _buildLoginButton(),
               const SizedBox(height: 20),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text('You Don’t Have An Account ? '),
+                  const Text('You Don’t Have An Account ? ',style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,),),
                   TextButton(
-                    onPressed: () {
-                     //add routs
+                    onPressed: () async {
+                      Navigator.pushNamed(context, '/signup');
                     },
                     child: const Text(
                       'SignUp',
                       style: TextStyle(
-                        fontSize: 20,
-                        color: Color(0xFF009C77),
+                          color: Color(0xFF009C77),
+                          fontSize: 20,
+                          fontStyle: FontStyle.italic
                       ),
+
                     ),
                   ),
                 ],
-                mainAxisAlignment: MainAxisAlignment.center,
               ),
             ],
           ),

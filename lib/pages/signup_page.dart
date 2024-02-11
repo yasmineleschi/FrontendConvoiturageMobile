@@ -30,111 +30,113 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return
-          Scaffold(
-          backgroundColor: Color(0xFFD9D9D9),
-          body: Container(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height,
-            child: ProgressHUD(
-              inAsyncCall: isAPIcallProcess,
-              opacity: 0.3,
-              key: UniqueKey(),
-              child: Form(
-                key: gfk,
-                child: _SIGNUPUI(context),
-              ),
-            ),
-
-        )
-    );
+    return Scaffold(
+        body: Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("images/back.png"),
+          fit: BoxFit.fill,
+        ),
+      ),
+      child: ProgressHUD(
+        inAsyncCall: isAPIcallProcess,
+        opacity: 0.3,
+        key: UniqueKey(),
+        child: Form(
+          key: gfk,
+          child: _SIGNUPUI(context),
+        ),
+      ),
+    ));
   }
 
   Widget _SIGNUPUI(BuildContext context) {
     return SingleChildScrollView(
+      padding: const EdgeInsets.all(10),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Image.asset(
-                    "assets/images/car.png",
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.contain,
-                  ),
-                )
-              ],
+        children: <Widget>[
+          const SizedBox(height: 120),
+          Align(
+            alignment: Alignment.center,
+            child: Image.asset(
+              "assets/images/car.png",
+              width: 120,
+              height: 120,
+              fit: BoxFit.contain,
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 10),
           const Text(
-            "REGISTARTION",
+            "REGISTRATION",
             style: TextStyle(
-                fontSize: 35, fontWeight: FontWeight.bold, color: Colors.black),
+              fontSize: 35,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
+          const SizedBox(height: 10),
           usernamefield(),
           emailfield(),
           passwordfield(),
           Container(
-              margin: const EdgeInsets.only(top: 20),
-              width: 300,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (validateandsave()) {
-
-                    await signup(username!, password!, email!, context);
-
-                  }
-                },
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF009C77)),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(color: Colors.white)
-                        )
-                    )
-                ),
-                child: const Text(
-                  "SIGN UP",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
+            margin: const EdgeInsets.only(top: 20),
+            height: 50,
+            width: 250,
+            child: ElevatedButton(
+              onPressed: () async {
+                if (validateandsave()) {
+                  await signup(username!, password!, email!, context);
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF009C77)),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: Color(0xFFECEAEA)),
                   ),
                 ),
-              )
+              ),
+              child: const Text(
+                "SIGN UP",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
+            ),
           ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                "You Already Have An Account?",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+                child: const Text(
+                  'LogIn',
+                  style: TextStyle(
+                    color: Color(0xFF009C77),
+                    fontSize: 20,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
 
-          const SizedBox(
-            height: 10,
+            ],
           ),
           Container(
-            child:const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children:[
-                Text(" You Already Have An Account ?", style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,),
-                ),
-                Text(" LogIn", style: TextStyle(
-                  color: Color(0xFF009C77),
-                  fontSize: 20,
-                  fontStyle: FontStyle.italic),
-                ),
-              ]
-            ),
-          )
+            height: 70,
+          ),
         ],
       ),
     );
@@ -145,9 +147,9 @@ class _SignupPageState extends State<SignupPage> {
       margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Color(0xFFECEAEA),
           borderRadius: BorderRadius.circular(10),
-          boxShadow:const [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 6,
@@ -162,7 +164,7 @@ class _SignupPageState extends State<SignupPage> {
             contentPadding: EdgeInsets.only(top: 14),
             prefixIcon: Icon(
               Icons.person,
-              color:  Colors.black,
+              color: Colors.black,
             ),
             hintText: 'Username',
             hintStyle: TextStyle(color: Colors.black38)),
@@ -179,12 +181,13 @@ class _SignupPageState extends State<SignupPage> {
       ),
     );
   }
+
   Widget emailfield() {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Color(0xFFECEAEA),
           borderRadius: BorderRadius.circular(10),
           boxShadow: const [
             BoxShadow(
@@ -196,12 +199,12 @@ class _SignupPageState extends State<SignupPage> {
       height: 60,
       child: TextFormField(
         controller: e,
-        decoration: const  InputDecoration(
+        decoration: const InputDecoration(
             border: InputBorder.none,
             contentPadding: EdgeInsets.only(top: 14),
             prefixIcon: Icon(
               Icons.email_outlined,
-              color:  Colors.black,
+              color: Colors.black,
             ),
             hintText: 'Email',
             hintStyle: TextStyle(color: Colors.black38)),
@@ -218,12 +221,13 @@ class _SignupPageState extends State<SignupPage> {
       ),
     );
   }
+
   Widget passwordfield() {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Color(0xFFECEAEA),
           borderRadius: BorderRadius.circular(10),
           boxShadow: const [
             BoxShadow(
@@ -240,7 +244,7 @@ class _SignupPageState extends State<SignupPage> {
             border: InputBorder.none,
             contentPadding: const EdgeInsets.only(top: 14),
             prefixIcon: const Icon(
-              Icons.password_outlined,
+              Icons.lock,
               color: Colors.black,
             ),
             hintText: 'Password',
@@ -253,7 +257,7 @@ class _SignupPageState extends State<SignupPage> {
               },
               color: Colors.black.withOpacity(0.7),
               icon:
-              Icon(hidepassword ? Icons.visibility_off : Icons.visibility),
+                  Icon(hidepassword ? Icons.visibility_off : Icons.visibility),
             )),
         validator: (value) {
           if (value!.isEmpty) {
@@ -277,14 +281,10 @@ class _SignupPageState extends State<SignupPage> {
       return false;
     }
   }
-
 }
 
-
-
-
-
-Future<void> signup(String username, String password, String email, BuildContext context) async {
+Future<void> signup(String username, String password, String email,
+    BuildContext context) async {
   const url = 'http://192.168.1.15:5000/api/users/register';
 
   Map<String, String> body = {
