@@ -45,7 +45,7 @@ class _ProfilPageState extends State<ProfilPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:5000/api/users/profile/$userId'),
+        Uri.parse('http://localhost:5000/api/users/profile/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -94,7 +94,7 @@ class _ProfilPageState extends State<ProfilPage> {
       }
 
       final response = await http.put(
-        Uri.parse('http://10.0.2.2:5000/api/users/update/$userId'),
+        Uri.parse('http://localhost:5000/api/users/update/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -184,7 +184,7 @@ class _ProfilPageState extends State<ProfilPage> {
             crossAxisAlignment: CrossAxisAlignment.center, // Center content horizontally
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage('assets/img.png'),
+                backgroundImage: AssetImage('assets/images/car.png'),
                 radius: 50,
               ),
               SizedBox(height: 20),
