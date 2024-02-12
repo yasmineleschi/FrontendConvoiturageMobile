@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home.dart';
-
+import 'Signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -41,7 +41,9 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
+
                     SizedBox(height: 30,),
+
                     Image.asset(
                       'assets/images/car.png',
                       width: 120,
@@ -96,26 +98,25 @@ class _LoginPageState extends State<LoginPage> {
               _buildLoginButton(),
               const SizedBox(height: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text('You Don’t Have An Account ? ',style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,),),
+                  const Text('You Don’t Have An Account ? '),
                   TextButton(
-                    onPressed: () async {
-                      Navigator.pushNamed(context, '/signup');
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignupPage()),
+                      );
                     },
                     child: const Text(
                       'SignUp',
                       style: TextStyle(
-                          color: Color(0xFF009C77),
-                          fontSize: 20,
-                          fontStyle: FontStyle.italic
+                        fontSize: 20,
+                        color: Color(0xFF009C77),
                       ),
-
                     ),
                   ),
                 ],
+                mainAxisAlignment: MainAxisAlignment.center,
               ),
 
             ],
@@ -134,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         labelText: 'Email',
-        prefixIcon: Icon(Icons.person), // Add icon for email
+        prefixIcon: Icon(Icons.email), // Add icon for email
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -205,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       try {
-        final url = Uri.parse('http://10.0.2.2:5000/api/users/login');
+        final url = Uri.parse('http://localhost:5000/api/users/login');
         final headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         };
