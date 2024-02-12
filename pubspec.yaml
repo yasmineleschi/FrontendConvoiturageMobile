@@ -30,13 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  api_cache_manager: ^1.0.2
   snippet_coder_utils: ^1.0.9
   shared_preferences: ^2.0.15
-  http: ^0.13.5
-  http_parser: ^4.0.0
-  email_validator: ^2.1.16
-  jwt_decoder:
+  http: ^1.2.0
   awesome_dialog: ^3.2.0
   flutter_native_splash: ^2.3.10
 
@@ -55,7 +51,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

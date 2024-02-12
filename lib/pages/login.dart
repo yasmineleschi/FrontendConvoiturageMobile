@@ -22,14 +22,17 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      body: Container(
-        decoration: const  BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("images/back.png"),
-            fit: BoxFit.fill,
-          ),
-        ),
-        child: Padding(
+      body: Stack(
+          children: [
+      Container(
+      decoration: const BoxDecoration(
+      image: DecorationImage(
+          image: AssetImage("assets/images/back.png"),
+      fit: BoxFit.cover,
+    ),
+    ),
+    ),
+        Padding(
           padding: const EdgeInsets.all(10),
           child: ListView(
             children: <Widget>[
@@ -38,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
-                    SizedBox(height: 120,),
+                    SizedBox(height: 30,),
                     Image.asset(
                       'assets/images/car.png',
                       width: 120,
@@ -114,10 +117,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
+
             ],
           ),
         ),
+  ],
       ),
+
     );
   }
 
