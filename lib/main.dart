@@ -25,19 +25,17 @@ class MyApp extends StatelessWidget {
       ),
 
       routes: {
-        '/': (context) => AnimatedSplashScreen(), // Adjusted to AnimatedSplashScreen
+        '/': (context) => AnimatedSplashScreen(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/home': (context) => HomePage(),
         '/profile': (context) => ProfilPage(),
-
       },
     );
   }
 }
 
 void handleError(dynamic error, StackTrace stackTrace) {
-  // Handle the error
   print('An error occurred: $error');
-  // Show an error message or perform other actions
+
 }

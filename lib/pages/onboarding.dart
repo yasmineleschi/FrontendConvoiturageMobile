@@ -20,7 +20,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       type: OnboardingType.type1,
     ),
     Onboarding(
-      imagePath: "images/icon.png",
+      imagePath: "assets/images/icon.png",
       type: OnboardingType.type2,
     ),
     Onboarding(
@@ -113,20 +113,21 @@ class Type1Widget extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("images/back.png"),
+            image: AssetImage("assets/images/back.png"),
             fit: BoxFit.fill,
           ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 80),
             Image.asset(
               onboarding.imagePath,
               width: 200,
-              height: 180,
+              height: 140,
               fit: BoxFit.contain,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             RichText(
               textAlign: TextAlign.center,
               text: const TextSpan(
@@ -188,20 +189,21 @@ class Type2Widget extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("images/back.png"),
+            image: AssetImage("assets/images/back.png"),
             fit: BoxFit.fill,
           ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 190),
             Image.asset(
               onboarding.imagePath,
               width: 300,
-              height: 300,
+              height: 250,
               fit: BoxFit.contain,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             RichText(
               textAlign: TextAlign.center,
               text: const TextSpan(
@@ -251,7 +253,7 @@ class Type3Widget extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("images/back.png"),
+            image: AssetImage("assets/images/back.png"),
             fit: BoxFit.fill,
           ),
         ),

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/painting.dart';
-import 'package:snippet_coder_utils/ProgressHUD.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
 class SignupPage extends StatefulWidget {
@@ -30,32 +29,37 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("images/back.png"),
-          fit: BoxFit.fill,
+    return  Scaffold(
+      body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/back.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SingleChildScrollView(
+              child: Form(
+                key: gfk,
+                child: _SIGNUPUI(context),
+
+            ),
+            ),
+          ],
         ),
-      ),
-      child: ProgressHUD(
-        inAsyncCall: isAPIcallProcess,
-        opacity: 0.3,
-        key: UniqueKey(),
-        child: Form(
-          key: gfk,
-          child: _SIGNUPUI(context),
-        ),
-      ),
-    ));
+
+    );
   }
 
+
   Widget _SIGNUPUI(BuildContext context) {
-    return SingleChildScrollView(
+    return     Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
         children: <Widget>[
-          const SizedBox(height: 120),
+          const SizedBox(height: 30),
           Align(
             alignment: Alignment.center,
             child: Image.asset(
@@ -65,7 +69,7 @@ class _SignupPageState extends State<SignupPage> {
               fit: BoxFit.contain,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           const Text(
             "REGISTRATION",
             style: TextStyle(
@@ -74,7 +78,7 @@ class _SignupPageState extends State<SignupPage> {
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           usernamefield(),
           emailfield(),
           passwordfield(),
@@ -134,9 +138,7 @@ class _SignupPageState extends State<SignupPage> {
 
             ],
           ),
-          Container(
-            height: 70,
-          ),
+
         ],
       ),
     );

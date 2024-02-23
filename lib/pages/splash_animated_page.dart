@@ -10,7 +10,7 @@ class AnimatedSplashScreen extends StatefulWidget {
   State<AnimatedSplashScreen> createState() => _AnimatedSplashScreenState();
 }
 
-// Add `TickerProviderStateMixin` to the class definition
+
 class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     with TickerProviderStateMixin {
   int _currentIndex = 0;
@@ -18,8 +18,8 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     'assets/images/splash1.png',
     'assets/images/splash2.png',
     'assets/images/splash3.png',
-    'images/splash4.png',
-    'images/splach5.png',
+    'assets/images/splash4.png',
+    'assets/images/splach5.png',
   ];
 
   final List<AnimationController> _controllers = [];
