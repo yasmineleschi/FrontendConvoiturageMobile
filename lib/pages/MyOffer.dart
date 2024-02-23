@@ -123,7 +123,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
             padding: const EdgeInsets.all(8.0),
             child: Center(
               child: Text(
-                'This is the List of My Offers',
+                'This is the List of My Offers .',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
