@@ -15,11 +15,8 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
     with TickerProviderStateMixin {
   int _currentIndex = 0;
   final List<String> _images = [
-    'assets/images/splash1.png',
-    'assets/images/splash2.png',
-    'assets/images/splash3.png',
-    'assets/images/splash4.png',
-    'assets/images/splach5.png',
+    'assets/images/s6.png',
+    'assets/images/s9.png',
   ];
 
   final List<AnimationController> _controllers = [];
@@ -31,8 +28,8 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
 
     for (var i = 0; i < _images.length; i++) {
       final controller = AnimationController(
-        duration: const Duration(seconds: 1),
-        vsync: this, // Now 'this' is a valid TickerProvider
+        duration: const Duration(seconds: 5000),
+        vsync: this,
       );
       final animation = Tween(begin: 0.0, end: 1.0).animate(controller);
       _controllers.add(controller);
@@ -41,7 +38,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
 
     _controllers.first.forward();
 
-    Timer.periodic(const Duration(seconds: 2), (timer) {
+    Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_currentIndex < _images.length - 1) {
         _controllers[_currentIndex].reverse();
         _currentIndex++;
@@ -74,7 +71,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(_images[index]),
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                 ),
               ),
             ),

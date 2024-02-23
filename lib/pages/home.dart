@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
-import 'profile.dart';
+
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: const  Text('Home Page'),
         actions: [
-          // Add an IconButton for the user profile
+
           IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilPage()), // Navigate to the profile page
-              );
+              Navigator.pushNamed(context, '/profile');
+
             },
             icon: const CircleAvatar(
-              // Placeholder user image (replace with actual user image)
-              backgroundImage: AssetImage('assets/images/car.png'),
+              // Placeholder user image (replace with actual user image or adjust as needed)
+              backgroundImage: AssetImage('assets/images/car.png'), // Ensure the asset exists or adjust accordingly
             ),
           ),
         ],
       ),
-      body: const Center(
+
+      body: Center(
         child: Text(
           'Welcome to the Home Page!',
           style: TextStyle(
@@ -34,6 +33,26 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
+  Widget buildMenuItems(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        ListTile(
+          leading: Icon(Icons.home),
+          title: Text('Add Offer'),
+          onTap: () {
+            Navigator.pushNamed(context, '/addOffer'); // Close the drawer
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.settings),
+          title: Text('Settings'),
+          onTap: () {
+
+          },
+        ),
+
+      ],
+    );
+  }
 }
-
-

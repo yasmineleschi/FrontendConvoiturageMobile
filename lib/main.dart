@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/pages/AddTrajet.dart';
 import 'package:frontendcovoituragemobile/pages/home.dart';
 import 'package:frontendcovoituragemobile/pages/signup_page.dart';
 import 'package:frontendcovoituragemobile/pages/login.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignupPage(),
         '/home': (context) => HomePage(),
         '/profile': (context) => ProfilPage(),
+        '/addOffer': (context) => AddTrajet(),
       },
     );
   }
