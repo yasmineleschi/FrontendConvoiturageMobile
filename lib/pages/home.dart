@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
+import 'profile.dart';
+import 'sidebar.dart';
 
 
 class HomePage extends StatelessWidget {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        title: const  Text('Home Page'),
+
+        title: Text('Home Page'),
+        leading: IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer(); // Open the sidebar
+          },
+          icon: Icon(Icons.menu),
+        ),
+
         actions: [
 
           IconButton(
@@ -14,15 +27,19 @@ class HomePage extends StatelessWidget {
               Navigator.pushNamed(context, '/profile');
 
             },
+
             icon: const CircleAvatar(
               // Placeholder user image (replace with actual user image or adjust as needed)
               backgroundImage: AssetImage('assets/images/car.png'), // Ensure the asset exists or adjust accordingly
+
             ),
           ),
         ],
       ),
 
-      body: Center(
+      drawer: SideBar(), // Add your Sidebar widget here
+      body: const Center(
+
         child: Text(
           'Welcome to the Home Page!',
           style: TextStyle(

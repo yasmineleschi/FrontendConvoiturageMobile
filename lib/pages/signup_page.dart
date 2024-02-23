@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/painting.dart';
-import 'package:snippet_coder_utils/ProgressHUD.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
 class SignupPage extends StatefulWidget {
