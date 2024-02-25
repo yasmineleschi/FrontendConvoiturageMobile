@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
-
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/painting.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:frontendcovoituragemobile/pages/SideBar.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+
 class AddTrajet extends StatefulWidget {
   const AddTrajet({super.key});
 
@@ -13,43 +16,44 @@ class AddTrajet extends StatefulWidget {
 }
 
 class _AddTrajetState extends State<AddTrajet> {
-  String? destinationLocation;
-  DateTime? destinationDateTime;
-  DateTime? departureDateTime;
-  String? departureLocation;
-  int? seatPrice;
-  int? seatAvailable;
-  String? image;
 
-  GlobalKey<FormState> formadd = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _departureLocationController = TextEditingController();
+  final TextEditingController _destinationLocationController = TextEditingController();
+  final TextEditingController _departureDateTimeController = TextEditingController();
+  final TextEditingController _destinationDateTimeController = TextEditingController();
+  final TextEditingController _seatPriceController = TextEditingController();
+  final TextEditingController _seatAvailableController = TextEditingController();
+  File? _image;
 
-  TextEditingController DepartureLocation = TextEditingController();
-  TextEditingController DeparturedateTime = TextEditingController();
-  TextEditingController destination = TextEditingController();
-  TextEditingController DestinationdateTime = TextEditingController();
-  TextEditingController SeatPrice = TextEditingController();
-  TextEditingController SeatAvailable = TextEditingController();
-  TextEditingController Image = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Color(0xFF009C77),
+        leading: IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer(); // Open the sidebar
+          },
+          icon: Icon(Icons.menu),
+        ),
+
         title: const Text(
-          "Add Offer" ,
+          "Add Offer",
           style: TextStyle(
-            fontStyle: FontStyle.italic,
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-             color: Colors.white),
-          textAlign: TextAlign.center,),
+              fontStyle: FontStyle.italic,
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
-
           IconButton(
             onPressed: () {
               Navigator.pushNamed(context, '/profile');
-
             },
             icon: const CircleAvatar(
               backgroundImage: AssetImage('assets/images/car.png'),
@@ -57,51 +61,20 @@ class _AddTrajetState extends State<AddTrajet> {
           ),
         ],
       ),
-
-      drawer: Drawer(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Color(0xFF009C77),
-                ),
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Drawer Header',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                ),
-              ),
-              buildMenuItems(context),
-            ],
-          ),
-        ),
-      ),
-
-      body: Container(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
+      drawer: SideBar(),
+      body: Stack(
+          children: [
               SingleChildScrollView(
                 child: Form(
-                  key: formadd,
+                  key: _formKey,
                   child: _formadd(context),
-
                 ),
               ),
             ],
-          ),
-        ),
       ),
     );
   }
+
   Widget _formadd(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -119,7 +92,7 @@ class _AddTrajetState extends State<AddTrajet> {
           const SizedBox(height: 10),
           DepartureLocationfield(),
           const SizedBox(height: 10),
-          DepartureDateTimeLield(),
+          departureDateTimeField(context),
           const SizedBox(height: 10),
           const Text(
             "To *",
@@ -132,30 +105,42 @@ class _AddTrajetState extends State<AddTrajet> {
           const SizedBox(height: 10),
           Destinationfield(),
           const SizedBox(height: 10),
-          DestinationDateTimeLfield(),
+          destinationDateTimeField(context),
           const SizedBox(height: 10),
-          SeatPricefield(),
+          const Text(
+            "Details",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: SeatPricefield(),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: SeatAvailblefield(),
+            ),
+          ],
+        ),
           const SizedBox(height: 10),
-          SeatAvailblefield(),
-          const SizedBox(height: 10),
-          imagefield(),
+          imageField(),
           Container(
             margin: const EdgeInsets.only(top: 20),
             height: 50,
             width: 150,
             child: ElevatedButton(
-              onPressed: () async {
-                if (validateandsave()) {
-                  await add(destinationLocation!, destinationDateTime!, departureDateTime!,departureLocation!,seatPrice!,seatAvailable!, image!, context);
-                }
-              },
+              onPressed: _submitForm,
               style: ButtonStyle(
                 backgroundColor:
-                MaterialStateProperty.all<Color>(Color(0xFF009C77)),
+                    MaterialStateProperty.all<Color>(Color(0xFF009C77)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
-
                   ),
                 ),
               ),
@@ -168,40 +153,38 @@ class _AddTrajetState extends State<AddTrajet> {
               ),
             ),
           ),
-
-
-
         ],
       ),
     );
   }
+
   Widget DepartureLocationfield() {
     return Container(
       alignment: Alignment.centerLeft,
       child: TextFormField(
-        controller: DepartureLocation,
-        decoration:  InputDecoration(
-            border: const OutlineInputBorder(  ),
+        controller: _departureLocationController,
+        decoration: InputDecoration(
+            border: const OutlineInputBorder(),
             labelText: 'Departure Location',
             focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide( color :Color(0xFF009C77)),
+              borderSide: BorderSide(color: Color(0xFF009C77)),
             ),
-            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
-
+            floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
             suffixIcon: IconButton(
               onPressed: () {
                 setState(() {
-                  DepartureLocation.clear();
+                  _departureLocationController.clear();
                 });
               },
-              icon: const Icon(Icons.clear),),
+              icon: const Icon(Icons.clear),
+            ),
             prefixIcon: const Icon(
               Icons.location_on_outlined,
               color: Colors.black,
             ),
-
             hintStyle: const TextStyle(color: Colors.black38)),
         keyboardType: TextInputType.text,
+
         validator: (value) {
           if (value!.isEmpty) {
             return "  Depature location  can\'t be empty!";
@@ -212,30 +195,28 @@ class _AddTrajetState extends State<AddTrajet> {
       ),
     );
   }
-  Widget DepartureDateTimeLield() {
+  Widget departureDateTimeField(BuildContext context) {
     return Container(
       alignment: Alignment.centerLeft,
       child: TextFormField(
-        controller: DeparturedateTime,
-        decoration:  InputDecoration(
-            border: const OutlineInputBorder(  ),
-            labelText: 'Departure Date & Time',
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide( color :Color(0xFF009C77)),
-            ),
-            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
-
-
-            prefixIcon: const Icon(
-              Icons.location_on_outlined,
-              color: Colors.black,
-            ),
-
-            hintStyle: const TextStyle(color: Colors.black38)),
-        keyboardType: TextInputType.datetime,
+        controller: _departureDateTimeController,
+        readOnly: true,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: 'Departure Date & Time',
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF009C77)),
+          ),
+          floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
+          prefixIcon: IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.black),
+            onPressed: () => _selectDateTime(context, _departureDateTimeController),
+          ),
+          hintStyle: const TextStyle(color: Colors.black38),
+        ),
         validator: (value) {
-          if (value!.isEmpty) {
-            return "  Depature location  can\'t be empty!";
+          if (value == null || value.isEmpty) {
+            return "Departure date & time can't be empty!";
           }
           return null;
         },
@@ -247,27 +228,26 @@ class _AddTrajetState extends State<AddTrajet> {
     return Container(
       alignment: Alignment.centerLeft,
       child: TextFormField(
-        controller: destination,
-        decoration:  InputDecoration(
-            border: const OutlineInputBorder(  ),
+        controller: _destinationLocationController,
+        decoration: InputDecoration(
+            border: const OutlineInputBorder(),
             labelText: 'Departure Date & Time',
             focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide( color :Color(0xFF009C77)),
+              borderSide: BorderSide(color: Color(0xFF009C77)),
             ),
-            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
-
+            floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
             suffixIcon: IconButton(
               onPressed: () {
                 setState(() {
-                  destination.clear();
+                  _destinationLocationController.clear();
                 });
               },
-              icon: const Icon(Icons.clear),),
+              icon: const Icon(Icons.clear),
+            ),
             prefixIcon: const Icon(
               Icons.location_on_outlined,
               color: Colors.black,
             ),
-
             hintStyle: const TextStyle(color: Colors.black38)),
         keyboardType: TextInputType.text,
         validator: (value) {
@@ -280,30 +260,28 @@ class _AddTrajetState extends State<AddTrajet> {
       ),
     );
   }
-  Widget DestinationDateTimeLfield() {
+  Widget destinationDateTimeField(BuildContext context) {
     return Container(
       alignment: Alignment.centerLeft,
       child: TextFormField(
-        controller: DestinationdateTime,
-        decoration:  const InputDecoration(
-            border: const OutlineInputBorder(  ),
-            labelText: 'Destination Date & Time',
-            focusedBorder: const OutlineInputBorder(
-              borderSide:  BorderSide( color :Color(0xFF009C77)),
-            ),
-            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
-
-
-            prefixIcon: const Icon(
-              Icons.date_range,
-              color: Colors.black,
-            ),
-
-            hintStyle: const TextStyle(color: Colors.black38)),
-        keyboardType: TextInputType.datetime,
+        controller: _destinationDateTimeController,
+        readOnly: true,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: 'Destination Date & Time',
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF009C77)),
+          ),
+          floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
+          prefixIcon: IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.black,),
+            onPressed: () => _selectDateTime(context, _destinationDateTimeController),
+          ),
+          hintStyle: const TextStyle(color: Colors.black38),
+        ),
         validator: (value) {
-          if (value!.isEmpty) {
-            return "  destionation  date & time can\'t be empty!";
+          if (value == null || value.isEmpty) {
+            return "Destination date & time can't be empty!";
           }
           return null;
         },
@@ -315,27 +293,26 @@ class _AddTrajetState extends State<AddTrajet> {
     return Container(
       alignment: Alignment.centerRight,
       child: TextFormField(
-        controller: SeatPrice,
-        decoration:  InputDecoration(
-            border: const OutlineInputBorder(  ),
+        controller: _seatPriceController,
+        decoration: InputDecoration(
+            border: const OutlineInputBorder(),
             labelText: 'Seat Price',
             focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide( color :Color(0xFF009C77)),
+              borderSide: BorderSide(color: Color(0xFF009C77)),
             ),
-            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
-
+            floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
             suffixIcon: IconButton(
               onPressed: () {
                 setState(() {
-                  SeatPrice.clear();
+                  _seatPriceController.clear();
                 });
               },
-              icon: const Icon(Icons.clear),),
+              icon: const Icon(Icons.clear),
+            ),
             prefixIcon: const Icon(
               Icons.price_change,
               color: Colors.black,
             ),
-
             hintStyle: const TextStyle(color: Colors.black38)),
         keyboardType: TextInputType.number,
         validator: (value) {
@@ -352,27 +329,26 @@ class _AddTrajetState extends State<AddTrajet> {
     return Container(
       alignment: Alignment.centerLeft,
       child: TextFormField(
-        controller: SeatAvailable,
-        decoration:  InputDecoration(
-            border: const OutlineInputBorder(  ),
+        controller: _seatAvailableController,
+        decoration: InputDecoration(
+            border: const OutlineInputBorder(),
             labelText: ' Seat Available',
             focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide( color :Color(0xFF009C77)),
+              borderSide: BorderSide(color: Color(0xFF009C77)),
             ),
-            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
-
+            floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
             suffixIcon: IconButton(
               onPressed: () {
                 setState(() {
-                  SeatAvailable.clear();
+                  _seatAvailableController.clear();
                 });
               },
-              icon: const Icon(Icons.clear),),
+              icon: const Icon(Icons.clear),
+            ),
             prefixIcon: const Icon(
               Icons.airline_seat_recline_extra_rounded,
               color: Colors.black,
             ),
-
             hintStyle: const TextStyle(color: Colors.black38)),
         keyboardType: TextInputType.number,
         validator: (value) {
@@ -385,144 +361,144 @@ class _AddTrajetState extends State<AddTrajet> {
       ),
     );
   }
-  Widget imagefield() {
-    return Container(
-      alignment: Alignment.centerLeft,
-      child: TextFormField(
-        controller: Image,
-        decoration:  InputDecoration(
-            border: const OutlineInputBorder(  ),
-            labelText: 'add image',
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide( color :Color(0xFF009C77)),
-            ),
-            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
-
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  Image.clear();
-                });
-              },
-              icon: const Icon(Icons.clear),),
-            prefixIcon: const Icon(
-              Icons.image,
-              color: Colors.black,
-            ),
-
-            hintStyle: const TextStyle(color: Colors.black38)),
-        keyboardType: TextInputType.text,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return "  destionation  date & time can\'t be empty!";
-          }
-          return null;
-        },
-
+  Widget imageField() {
+    return InkWell(
+      onTap: () {
+        pickImage();
+      },
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: _image == null
+            ? IconButton(
+          icon: Icon(
+            Icons.image,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            pickImage();
+          },
+        )
+            : ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: Image.file(
+            _image!,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }
-  bool validateandsave() {
-    final form = formadd.currentState;
-    if (form!.validate()) {
-      form.save();
-      return true;
-    } else {
-      return false;
+  Future pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
     }
   }
-  Widget buildMenuItems(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Add Offer'),
-          onTap: () {
-            Navigator.pushNamed(context, '/addOffer'); // Close the drawer
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('Settings'),
-          onTap: () {
 
-          },
-        ),
-
-      ],
+  Future<void> _selectDateTime(BuildContext context, TextEditingController controller) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
     );
-  }
-}
-
-
-
-
-
-Future<void> add(
-    String destinationLocation,
-    DateTime destinationDateTime ,
-    DateTime departureDateTime, String departureLocation,
-    int seatPrice ,
-    int seatAvailable,
-    String image,
-    BuildContext context) async {
-  const url = 'http://localhost:5000/api/cars/';
-
-  Map<String, dynamic> body = {
-  "destinationLocation" : destinationLocation,
-  "destinationDateTime" :destinationDateTime,
-  "departureDateTime" :departureDateTime,
-  "departureLocation" : departureLocation,
-  "seatPrice" : seatPrice ,
-  "seatAvailable" : seatAvailable ,
-  "image" : image
-
-  };
-
-  try {
-    final http.Response response = await http.post(
-      Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
-      body: json.encode(body),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-
-      final jsonResponse = jsonDecode(response.body);
-      print("offer added: $jsonResponse");
-
-      AwesomeDialog(
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
-        dialogType: DialogType.success,
-        animType: AnimType.bottomSlide,
-        title: 'add offer Successful',
-        desc: 'Welcome, ! Your traject has been successfully created.',
-        btnOkOnPress: () {},
-      )..show();
-    } else {
-      // Error
-      final errorResponse = jsonDecode(response.body);
-      print("Error: $errorResponse");
+        initialTime: TimeOfDay.now(),
+      );
+      if (pickedTime != null) {
+        final DateTime finalDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        setState(() {
+          controller.text = DateFormat('yyyy-MM-dd HH:mm').format(finalDateTime);
+        });
+      }
+    }
+  }
 
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+
+    if (userId == null) {
+      print('User ID not found');
+      return;
+    }
+
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('http://192.168.1.15:5000/api/car/'),
+    );
+
+    request.fields['departureLocation'] = _departureLocationController.text;
+    request.fields['destinationLocation'] = _destinationLocationController.text;
+    request.fields['departureDateTime'] = _departureDateTimeController.text;
+    request.fields['destinationDateTime'] = _destinationDateTimeController.text;
+    request.fields['seatPrice'] = _seatPriceController.text;
+    request.fields['seatAvailable'] = _seatAvailableController.text;
+    request.fields['userId'] = userId;
+
+    if (_image != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        _image!.path,
+      ));
+    }
+
+    try {
+      var streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        print('Car offer added successfully');
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.bottomSlide,
+          title: 'Success',
+          desc: 'Car offer added successfully',
+          btnOkOnPress: () {},
+        )..show();
+      } else {
+        print('Failed to add car offer');
+        final errorResponse = json.decode(response.body);
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.bottomSlide,
+          title: 'Error',
+          desc: 'Error: ${errorResponse['message']}',
+          btnOkOnPress: () {},
+        )..show();
+      }
+    } catch (e) {
+      print(e.toString());
       AwesomeDialog(
         context: context,
         dialogType: DialogType.error,
         animType: AnimType.bottomSlide,
         title: 'Error',
-        desc: 'Error: ${errorResponse['message']}',
+        desc: 'An unexpected error occurred',
         btnOkOnPress: () {},
       )..show();
     }
-  } catch (e) {
-    print("Error: $e");
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.error,
-      animType: AnimType.bottomSlide,
-      title: 'Error',
-      desc: 'An error occurred during added.',
-      btnOkOnPress: () {},
-    )..show();
   }
 
 }

@@ -8,6 +8,7 @@ import 'package:frontendcovoituragemobile/pages/signup_page.dart';
 import 'package:frontendcovoituragemobile/pages/login.dart';
 import 'package:frontendcovoituragemobile/pages/profile.dart';
 import 'package:frontendcovoituragemobile/pages/splash_animated_page.dart';
+import 'package:frontendcovoituragemobile/pages/test.dart';
 
 Future<void> main() async {
   runApp(const MyApp());
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/profile': (context) => ProfilPage(),
         '/addOffer': (context) => AddTrajet(),
+        '/test': (context) => CarsListPage(),
       },
     );
   }

@@ -216,6 +216,8 @@ class _SignupPageState extends State<SignupPage> {
         validator: (value) {
           if (value!.isEmpty) {
             return "  Email can\'t be empty!";
+          } if (value == null || value.isEmpty || !value.contains('@')) {
+            return 'Please enter a valid email';
           }
           return null;
         },
@@ -258,8 +260,12 @@ class _SignupPageState extends State<SignupPage> {
           if (value!.isEmpty) {
             return "  Password can\'t be empty!";
           }
-          return null;
-        },
+    if (value == null || value.isEmpty || value.length < 7 || !RegExp(r'[A-Z]').hasMatch(value)) {
+    return 'Password must be at least 7 characters long and include at least one uppercase letter.';
+    }
+    return null;
+    },
+
         onSaved: (val) {
           password = val;
         },
@@ -280,7 +286,7 @@ class _SignupPageState extends State<SignupPage> {
 
 Future<void> signup(String username, String password, String email,
     BuildContext context) async {
-  const url = 'http://localhost:5000/api/users/register';
+  const url = 'http://192.168.1.15:5000/api/users/register';
 
   Map<String, String> body = {
     'username': username,

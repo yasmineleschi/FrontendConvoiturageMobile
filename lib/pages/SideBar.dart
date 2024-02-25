@@ -30,7 +30,7 @@ class _SideBarState extends State<SideBar> {
       }
 
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/users/profile/$userId'),
+        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -94,6 +94,24 @@ class _SideBarState extends State<SideBar> {
                 context,
                 MaterialPageRoute(builder: (context) => MyOffersPage()),
               );
+
+
+
+            },
+          ),
+          ListTile(
+    leading: Icon(Icons.list),
+    title: Text('ADD TRAJECT'),
+    onTap: () {
+      Navigator.pushNamed(context, '/addOffer');
+
+    },
+    ),
+          ListTile(
+            leading: Icon(Icons.list),
+            title: Text('test'),
+            onTap: () {
+              Navigator.pushNamed(context, '/test');
 
             },
           ),
