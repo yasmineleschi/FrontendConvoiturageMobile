@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontendcovoituragemobile/pages/MyOffer.dart';
 import 'MyOffer.dart';
+import 'home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -57,7 +58,11 @@ class _SideBarState extends State<SideBar> {
         children: <Widget>[
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Color(0xFF009C77),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.white, Color(0xFF009C77)],
+              ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -81,6 +86,10 @@ class _SideBarState extends State<SideBar> {
             leading: Icon(Icons.home),
             title: Text('Home Page'),
             onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
 
             },
           ),

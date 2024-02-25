@@ -63,6 +63,8 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Update Offer'),
+        centerTitle: true,
+
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -71,44 +73,97 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
+                controller: _departureLocationController,
+                decoration: InputDecoration(
+                  labelText: 'Departure Location',
+                  suffixIcon: Image.asset(
+                    'assets/images/img_6.png',
+                    width: 20,
+                    height: 20,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+
+                ),
+              ),
+
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _destinationLocationController,
+                decoration: InputDecoration(labelText: 'Destination Location',
+                  suffixIcon: Image.asset(
+                    'assets/images/img_6.png',
+                    width: 20,
+                    height: 20,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                ),
+
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _seatPriceController,
+                decoration: InputDecoration(labelText: 'Seat Price',
+                  suffixIcon: Image.asset(
+                    'assets/images/img_9.png',
+                    width: 20,
+                    height: 20,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),),
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _seatAvailableController,
+                decoration: InputDecoration(labelText: 'Seat Available',
+                  suffixIcon: Image.asset(
+                    'assets/images/img_8.png',
+                    width: 20,
+                    height: 20,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),),
+
+              ),
+              SizedBox(height: 20),
+              TextFormField(
                 controller: _departureDateTimeController,
                 readOnly: true,
                 decoration: InputDecoration(
                   labelText: 'Departure Date and Time',
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.calendar_today),
                     onPressed: () => _selectDateTime(context),
+                    icon: Image.asset(
+                      'assets/images/img_7.png',
+                      width: 40,
+                      height: 40,
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
               ),
-              TextFormField(
-                controller: _departureLocationController,
-                decoration: InputDecoration(labelText: 'Departure Location'),
-              ),
-              TextFormField(
-                controller: _destinationLocationController,
-                decoration: InputDecoration(labelText: 'Destination Location'),
-              ),
-              TextFormField(
-                controller: _seatPriceController,
-                decoration: InputDecoration(labelText: 'Seat Price'),
-              ),
-              TextFormField(
-                controller: _seatAvailableController,
-                decoration: InputDecoration(labelText: 'Seat Available'),
-              ),
-              TextFormField(
-                controller: _modelController,
-                decoration: InputDecoration(labelText: 'Model'),
-              ),
-              TextFormField(
-                controller: _matriculeController,
-                decoration: InputDecoration(labelText: 'Matricule'),
-              ),
+
+
+              SizedBox(height: 20),
+
 
               ElevatedButton(
                 onPressed: _updateOffer,
-                child: Text('Update'),
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xFF009C77), // Background color
+                ),
+                child: Text('Update',
+                  style: TextStyle(
+                    color: Colors.white, // Text color
+                  ),),
+
               ),
             ],
           ),

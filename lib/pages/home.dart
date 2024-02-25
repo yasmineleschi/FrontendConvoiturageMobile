@@ -10,7 +10,9 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text('Home '),
+        centerTitle: true,
+
         leading: IconButton(
           onPressed: () {
             _scaffoldKey.currentState!.openDrawer(); // Open the sidebar
