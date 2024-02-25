@@ -1,6 +1,8 @@
 import 'UpdaitOffre.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'SideBar.dart' ;
+
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -85,14 +87,26 @@ class _MyOffersPageState extends State<MyOffersPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Offers'),
+        centerTitle: true,
+
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: Icon(Icons.search),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
-                  title: Text('Filter by Destination'),
+                  title: Text('Search by Destination'),
                   content: TextField(
                     onChanged: (value) {
                       _filterOffersByDestination(value);
@@ -101,41 +115,20 @@ class _MyOffersPageState extends State<MyOffersPage> {
                       hintText: 'Enter destination...',
                     ),
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text('Close'),
-                    ),
-                  ],
                 ),
               );
             },
           ),
         ],
       ),
+      drawer: SideBar(), // Add the sidebar here
+
+
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Text(
-                'This is the List of My Offers',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          Divider(
-            color: Colors.grey,
-            thickness: 2.0,
-          ),
+
           Expanded(
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -156,114 +149,161 @@ class _MyOffersPageState extends State<MyOffersPage> {
                       return Text('Error: ${snapshot.error}');
                     }
                     final userData = snapshot.data ?? {};
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Column(
+                    return SingleChildScrollView(
+                      child: Container(
+                        margin: EdgeInsets.all(20),
+                        padding: EdgeInsets.all(30),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Color(0xFF009C77), Colors.white38, Color(0xFF009C77)]
+                            )
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: AssetImage('assets/images/car.png'),
+                                ),
+                                SizedBox(width: 8.0),
+                                Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: AssetImage('assets/images/car.png'),
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(userData['username'] ?? ''),
-                                        SizedBox(height: 4.0),
-                                      ],
-                                    ),
+                                    Text(userData['username'] ?? ''),
+                                    SizedBox(height: 4.0),
                                   ],
                                 ),
-                                SizedBox(height: 4.0),
-                                Center(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: offer['image'] != null
-                                        ? Image.network(
-                                      'http://localhost:5000/uploads/${offer['image']}',
-                                      width: 200, // Adjusted width
-                                      height: 100, // Adjusted height
-                                      fit: BoxFit.cover,
-                                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        } else {
-                                          return Center(child: CircularProgressIndicator());
-                                        }
-                                      },
-                                      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                        print('Error loading image: $error');
-                                        return Icon(Icons.error);
-                                      },
-                                    )
-                                        : Icon(Icons.image_not_supported),
+                              ],
+                            ),
+                            SizedBox(height: 10.0),
+                            Center(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: offer['image'] != null
+                                    ? Image.network(
+                                  'http://localhost:5000/uploads/${offer['image']}',
+                                  width: 200, // Adjusted width
+                                  height: 100, // Adjusted height
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    } else {
+                                      return Center(child: CircularProgressIndicator());
+                                    }
+                                  },
+                                  errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                    print('Error loading image: $error');
+                                    return Icon(Icons.error);
+                                  },
+                                )
+                                    : Icon(Icons.image_not_supported),
+                              ),
+                            ),
+                            SizedBox(height: 10.0),
+                            Row(
+                              children: [
+                                Image.asset(
+                                  'assets/images/img_6.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
+
+                                SizedBox(width: 10),
+                                Text('${offer['departureLocation']} --> '),
+                                SizedBox(width: 10),
+                                Image.asset(
+                                  'assets/images/img_6.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                SizedBox(width: 4.0),
+                                Text('${offer['destinationLocation']}'), // Text for Destination Location
+                              ],
+                            ),
+                            SizedBox(height: 4.0),
+                            Row(
+                              children: [
+                                Image.asset(
+                                  'assets/images/img_7.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                SizedBox(width: 4.0),
+                                Text(' ${DateTime.parse(offer['departureDateTime']).toString()}'), // Text for Departure Date
+                              ],
+                            ),
+                            SizedBox(height: 4.0),
+                            Row(
+                              children: [
+                                Image.asset(
+                                  'assets/images/img_8.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                SizedBox(width: 4.0),
+                                Text('${offer['seatAvailable']}'),
+                                SizedBox(width: 20.0),
+                                Image.asset(
+                                  'assets/images/img_9.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                SizedBox(width: 4.0),
+                                Text('${offer['seatPrice']}'),
+                              ],
+                            ),
+
+                            SizedBox(height: 8.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+
+                                  },
+                                  child: Image.asset(
+                                    'assets/images/img_5.png',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                ),
+                                SizedBox(width: 70),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UpdateOffrePage(
+                                          offerId: offer['_id'].toString(),
+                                          departureDateTime: offer['departureDateTime'].toString(),
+                                          departureLocation: offer['departureLocation'].toString(),
+                                          destinationLocation: offer['destinationLocation'].toString(),
+                                          seatPrice: offer['seatPrice'].toString(),
+                                          seatAvailable: offer['seatAvailable'].toString(),
+                                          model: offer['model'].toString(),
+                                          matricule: offer['matricule'].toString(),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Image.asset(
+                                    'assets/images/img_4.png',
+                                    width: 24,
+                                    height: 24,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Departure: ${offer['departureLocation']} -> Destination: ${offer['destinationLocation']}'),
-                                  SizedBox(height: 4.0),
-                                  Text('Departure Date: ${DateTime.parse(offer['departureDateTime']).toString()}'),
-                                  SizedBox(height: 4.0),
-                                  Text('Available Seats: ${offer['seatAvailable']}'),
-                                  SizedBox(height: 8.0),
-                                  Center( // Wrap the Row with Center widget
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center, // Align buttons to the center
-                                      children: [
 
-                                        IconButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => UpdateOffrePage(
-                                                  offerId: offer['_id'].toString(),
-                                                  departureDateTime: offer['departureDateTime'].toString(),
-                                                  departureLocation: offer['departureLocation'].toString(),
-                                                  destinationLocation: offer['destinationLocation'].toString(),
-                                                  seatPrice: offer['seatPrice'].toString(),
-                                                  seatAvailable: offer['seatAvailable'].toString(),
-                                                  model: offer['model'].toString(),
-                                                  matricule: offer['matricule'].toString(),
-                                                ),
-                                              ),
-                                            );
-
-
-                                          },
-                                          icon: Icon(
-                                            Icons.update,
-                                            color: Colors.amber,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },

@@ -168,10 +168,10 @@ class _ProfilPageState extends State<ProfilPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profil Page'),
-        backgroundColor: Color(0xFFD9D9D9),
+        title: Text('Profil '),
+        centerTitle: true,
+
       ),
-      backgroundColor: Color(0xFFD9D9D9),
       body: SingleChildScrollView(
         child: _isLoading
             ? Center(child: CircularProgressIndicator())
@@ -203,7 +203,6 @@ class _ProfilPageState extends State<ProfilPage> {
 
                   prefixIcon: Icon(Icons.medical_information_outlined),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  fillColor: Colors.white70, // Set the background color to white
 
                 ),
                 onChanged: (String? newValue) {
@@ -260,7 +259,7 @@ class _ProfilPageState extends State<ProfilPage> {
           prefixIcon: Icon(icon),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           filled: true, // Add this line to enable filling
-          fillColor: Colors.white70, // Set the background color to white
+          fillColor: Colors.white, // Set the background color to white
         ),
       ),
     );
