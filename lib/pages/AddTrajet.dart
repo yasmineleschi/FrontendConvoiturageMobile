@@ -49,6 +49,7 @@ class _AddTrajetState extends State<AddTrajet> {
               color: Colors.white),
           textAlign: TextAlign.center,
         ),
+        centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
