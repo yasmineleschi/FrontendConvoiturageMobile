@@ -31,7 +31,7 @@ class _SideBarState extends State<SideBar> {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
+        Uri.parse('http://localhost:5000/api/users/profile/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },

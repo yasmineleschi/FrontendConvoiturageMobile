@@ -4,7 +4,7 @@ class CarRide {
   final DateTime departureDateTime;
   final String departureLocation;
   final String destinationLocation;
-  final DateTime destinationDateTime;
+  final DateTime? destinationDateTime; // Making this optional
   final double seatPrice;
   final int seatAvailable;
   final String user;
@@ -17,7 +17,7 @@ class CarRide {
     required this.departureDateTime,
     required this.departureLocation,
     required this.destinationLocation,
-    required this.destinationDateTime,
+    this.destinationDateTime, // Adjusted for optional
     required this.seatPrice,
     required this.seatAvailable,
     required this.user,
@@ -32,8 +32,10 @@ class CarRide {
       departureDateTime: DateTime.parse(json['departureDateTime']),
       departureLocation: json['departureLocation'],
       destinationLocation: json['destinationLocation'],
-      destinationDateTime: DateTime.parse(json['destinationDateTime']),
-      seatPrice: json['seatPrice'].toDouble(),
+      destinationDateTime: json['destinationDateTime'] != null
+          ? DateTime.parse(json['destinationDateTime'])
+          : null, // Handle optional destinationDateTime
+      seatPrice: (json['seatPrice'] as num).toDouble(),
       seatAvailable: json['seatAvailable'],
       user: json['user'],
       createdAt: DateTime.parse(json['createdAt']),

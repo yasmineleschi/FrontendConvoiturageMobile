@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-// Ensure this path correctly points to where your CarRide model is located.
-// If CarRide is in the same file, you don't need an import for it.
+
 
 class CarsListPage extends StatefulWidget {
   const CarsListPage({Key? key}) : super(key: key);
