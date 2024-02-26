@@ -95,8 +95,7 @@ class _CarsListPageState extends State<CarsListPage> {
   }
 }
 
-// Ensure this matches the structure of the JSON data you're working with.
-// Adjustments might be needed based on the actual data and requirements.
+
 class CarRide {
   final String id;
   final String image;

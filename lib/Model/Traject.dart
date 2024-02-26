@@ -17,7 +17,7 @@ class CarRide {
     required this.departureDateTime,
     required this.departureLocation,
     required this.destinationLocation,
-    this.destinationDateTime, // Adjusted for optional
+    this.destinationDateTime,
     required this.seatPrice,
     required this.seatAvailable,
     required this.user,
