@@ -21,7 +21,7 @@ class _CarsListPageState extends State<CarsListPage> {
   }
 
   Future<List<CarRide>> fetchCars() async {
-    const String apiUrl = 'http://192.168.1.15:5000/api/car/';
+    const String apiUrl = 'http://localhost:5000/api/car/';
     try {
       final response = await http.get(Uri.parse(apiUrl));
 
@@ -40,7 +40,7 @@ class _CarsListPageState extends State<CarsListPage> {
   }
 
   Future<void> deleteCar(String carId) async {
-    final url = 'http://192.168.1.15:5000/api/car/$carId';
+    final url = 'http://localhost:5000/api/car/$carId';
     try {
       final response = await http.delete(Uri.parse(url));
 

@@ -266,7 +266,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                               children: [
                                 InkWell(
                                   onTap: () {
-
+//
                                   },
                                   child: Image.asset(
                                     'assets/images/img_5.png',
