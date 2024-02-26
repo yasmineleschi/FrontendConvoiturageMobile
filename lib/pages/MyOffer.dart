@@ -142,7 +142,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
       ),
       drawer: SideBar(), // Add the sidebar here
 
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -284,7 +283,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 InkWell(
-                                  onTap: () => deleteCar(offer.offerId),
+                                  onTap: () => deleteCar(offer['_id']),
                                   child: Image.asset(
                                     'assets/images/img_5.png',
                                     width: 24,
