@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-// Ensure this path correctly points to where your CarRide model is located.
-// If CarRide is in the same file, you don't need an import for it.
+
 
 class CarsListPage extends StatefulWidget {
   const CarsListPage({Key? key}) : super(key: key);
@@ -21,7 +20,7 @@ class _CarsListPageState extends State<CarsListPage> {
   }
 
   Future<List<CarRide>> fetchCars() async {
-    const String apiUrl = 'http://192.168.1.15:5000/api/car/';
+    const String apiUrl = 'http://localhost:5000/api/car/';
     try {
       final response = await http.get(Uri.parse(apiUrl));
 
@@ -40,7 +39,7 @@ class _CarsListPageState extends State<CarsListPage> {
   }
 
   Future<void> deleteCar(String carId) async {
-    final url = 'http://192.168.1.15:5000/api/car/$carId';
+    final url = 'http://localhost:5000/api/car/$carId';
     try {
       final response = await http.delete(Uri.parse(url));
 

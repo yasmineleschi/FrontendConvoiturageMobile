@@ -22,6 +22,25 @@ class _MyOffersPageState extends State<MyOffersPage> {
     super.initState();
     _getUserIDAndFetchOffers();
   }
+  Future<void> deleteCar(String carId) async {
+    final url = 'http://localhost:5000/api/car/$carId';
+    try {
+      final response = await http.delete(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        setState(() {
+           _getUserIDAndFetchOffers();
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Car deleted successfully')));
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
 
   Future<void> _getUserIDAndFetchOffers() async {
     try {
@@ -265,9 +284,8 @@ class _MyOffersPageState extends State<MyOffersPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 InkWell(
-                                  onTap: () {
+                                  onTap: () => deleteCar(offer.offerId),
 
-                                  },
                                   child: Image.asset(
                                     'assets/images/img_5.png',
                                     width: 24,
