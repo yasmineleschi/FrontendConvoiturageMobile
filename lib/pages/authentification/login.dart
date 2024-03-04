@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'home.dart';
-import 'Signup_page.dart';
+import '../home.dart';
+import 'package:frontendcovoituragemobile/pages/authentification/signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -206,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       try {
-        final url = Uri.parse('http://localhost:5000/api/users/login');
+        final url = Uri.parse('http://192.168.1.15:5000/api/users/login');
         final headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         };

@@ -180,7 +180,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
         throw Exception('User ID is null');
       }
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/car/user/$userId'),
+        Uri.parse('http://172.16.18.126:5000/api/car/user/$userId'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -201,7 +201,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
   Future<Map<String, dynamic>> _fetchUserData(String userId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/users/profile/$userId'),
+        Uri.parse('http://172.16.18.126:5000/users/profile/$userId'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -228,7 +228,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
       if (userId != null) {
         // Update offer with user ID
         final response = await http.put(
-          Uri.parse('http://192.168.1.15:5000/api/car/${widget.offerId}'),
+          Uri.parse('http://172.16.18.126:5000/api/car/${widget.offerId}'),
           headers: {
             'Content-Type': 'application/json',
           },

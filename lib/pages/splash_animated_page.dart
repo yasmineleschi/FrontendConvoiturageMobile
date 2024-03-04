@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:frontendcovoituragemobile/pages/login.dart';
+import 'package:frontendcovoituragemobile/pages/authentification/login.dart';
 import 'package:frontendcovoituragemobile/pages/onboarding.dart';
 
 class AnimatedSplashScreen extends StatefulWidget {

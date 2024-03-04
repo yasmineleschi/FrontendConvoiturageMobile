@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'profile.dart';
+import 'authentification/profile.dart';
 import 'sidebar.dart';
 
 class HomePage extends StatelessWidget {
