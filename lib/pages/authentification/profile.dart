@@ -297,7 +297,7 @@ class _ProfilPageState extends State<ProfilPage> {
             : ClipRRect(
           borderRadius: BorderRadius.circular(50),
           child: Image.network(
-            'http://192.168.1.15:5000/uploads/$_image',
+            'http://192.168.1.15:5000/uploads/${_userData}[image]}',
             width: 100,
             height: 100,
             fit: BoxFit.cover,

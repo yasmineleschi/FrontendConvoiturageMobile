@@ -9,9 +9,14 @@ import 'package:frontendcovoituragemobile/pages/authentification/signup_page.dar
 import 'package:frontendcovoituragemobile/pages/authentification/login.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/profile.dart';
 import 'package:frontendcovoituragemobile/pages/splash_animated_page.dart';
-import 'package:frontendcovoituragemobile/pages/test.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Demander la permission de localisation
+  await Permission.location.request();
   runApp(const MyApp());
 
 }
