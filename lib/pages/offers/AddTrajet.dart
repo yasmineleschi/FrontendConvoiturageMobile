@@ -407,7 +407,7 @@ class _AddTrajetState extends State<AddTrajet> {
 
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://192.168.1.15:5000/api/car/'),
+      Uri.parse('http://localhost:5000/api/car/'),
     );
 
     // Prepare the car data

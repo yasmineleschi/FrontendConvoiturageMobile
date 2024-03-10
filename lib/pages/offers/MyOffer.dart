@@ -1,12 +1,15 @@
+
+
+
+import 'package:frontendcovoituragemobile/pages/offers/AddTrajet.dart';
 import 'package:frontendcovoituragemobile/pages/offers/UpdaitOffre.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../SideBar.dart' ;
+import '../SideBar.dart';
+import 'package:intl/intl.dart';
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
 
 class MyOffersPage extends StatefulWidget {
   @override
@@ -15,30 +18,32 @@ class MyOffersPage extends StatefulWidget {
 
 class _MyOffersPageState extends State<MyOffersPage> {
   List<dynamic> _offers = [];
-  List<dynamic> _filteredOffers = [];
+  List<dynamic> filteredOffers = [];
 
   @override
   void initState() {
     super.initState();
     _getUserIDAndFetchOffers();
   }
+
   Future<void> deleteCar(String carId) async {
-    final url = 'http://192.168.1.15:5000/api/car/$carId';
+    final url = 'http://localhost:5000/api/car/$carId';
     try {
       final response = await http.delete(Uri.parse(url));
 
       if (response.statusCode == 200) {
         setState(() {
-           _getUserIDAndFetchOffers();
+          _getUserIDAndFetchOffers();
         });
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Car deleted successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Car deleted successfully')));
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${response.body}')));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -50,7 +55,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
         throw Exception('User ID is null');
       }
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/car/user/$userId'),
+        Uri.parse('http://localhost:5000/api/car/user/$userId'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -58,7 +63,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
       if (response.statusCode == 200) {
         setState(() {
           _offers = json.decode(response.body);
-          _filteredOffers = List.from(_offers);
+          filteredOffers = List.from(_offers);
         });
       } else {
         throw Exception('Failed to fetch offers');
@@ -68,11 +73,10 @@ class _MyOffersPageState extends State<MyOffersPage> {
     }
   }
 
-
   Future<Map<String, dynamic>> _fetchUserData(String userId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
+        Uri.parse('http://localhost:5000/api/users/profile/$userId'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -89,17 +93,21 @@ class _MyOffersPageState extends State<MyOffersPage> {
   }
 
   void _filterOffersByDestination(String destination) {
-    setState(() {
-      _filteredOffers = _offers.where((offer) =>
-          offer['destinationLocation']
-              .toString()
-              .toLowerCase()
-              .contains(destination.toLowerCase())).toList();
-    });
+    if (destination.isEmpty) {
+      setState(() {
+        filteredOffers = List.from(_offers);
+      });
+    } else {
+      setState(() {
+        filteredOffers = _offers
+            .where((offer) => offer['destinationLocation']
+            .toString()
+            .toLowerCase()
+            .contains(destination.toLowerCase()))
+            .toList();
+      });
+    }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +115,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
       appBar: AppBar(
         title: Text('My Offers'),
         centerTitle: true,
-
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -118,217 +125,234 @@ class _MyOffersPageState extends State<MyOffersPage> {
             );
           },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: Text('Search by Destination'),
-                  content: TextField(
-                    onChanged: (value) {
-                      _filterOffersByDestination(value);
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Enter destination...',
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
+
       ),
-      drawer: SideBar(), // Add the sidebar here
+      drawer: SideBar(),
+
 
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: 20),
-
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 1,
-                crossAxisSpacing: 9.0,
-                mainAxisSpacing: 9.0,
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: TextField(
+                onChanged: (value) {
+                  _filterOffersByDestination(value);
+                },
+                decoration: InputDecoration(
+                  hintText: 'Enter destination...',
+                  filled: true,
+                  fillColor: Color(0xFFD9D9D9), // Background color
+                  contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0), // Padding around the text
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Border radius
+                    borderSide: BorderSide.none, // No border
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      // Perform search action
+                    },
+                  ),
+                ),
               ),
-              itemCount: _filteredOffers.length,
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredOffers.length,
               itemBuilder: (BuildContext context, int index) {
-                final offer = _filteredOffers[index];
-                return FutureBuilder(
-                  future: _fetchUserData(offer['user']),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    }
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    final userData = snapshot.data ?? {};
-                    return SingleChildScrollView(
-                      child: Container(
-                        margin: EdgeInsets.all(20),
-                        padding: EdgeInsets.all(30),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [Color(0xFF009C77), Colors.white38, Color(0xFF009C77)]
-                            )
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                final offer = filteredOffers[index];
+                return GestureDetector(
+                  onTap: () {
+                    // Handle offer details navigation here
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFFD9D9D9), Color(0xFFD9D9D9)],
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+
+                        SizedBox(height: 10.0),
+                        Row(
                           children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundImage: AssetImage('assets/images/car.png'),
-                                ),
-                                SizedBox(width: 8.0),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(userData['username'] ?? ''),
-                                    SizedBox(height: 4.0),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10.0),
-                            Center(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: offer['image'] != null
-                                    ? Image.network(
-                                  'http://172.16.18.126:5000/uploads/${offer['image']}',
-                                  width: 200, // Adjusted width
-                                  height: 100, // Adjusted height
-                                  fit: BoxFit.cover,
-                                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    } else {
-                                      return Center(child: CircularProgressIndicator());
-                                    }
-                                  },
-                                  errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                    print('Error loading image: $error');
-                                    return Icon(Icons.error);
-                                  },
-                                )
-                                    : Icon(Icons.image_not_supported),
+                            Text(
+                              '${offer['departureLocation']} --> ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 10.0),
-                            Row(
-                              children: [
-                                Image.asset(
-                                  'assets/images/img_6.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
-
-                                SizedBox(width: 10),
-                                Text('${offer['departureLocation']} --> '),
-                                SizedBox(width: 10),
-                                Image.asset(
-                                  'assets/images/img_6.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                SizedBox(width: 4.0),
-                                Text('${offer['destinationLocation']}'), // Text for Destination Location
-                              ],
+                            SizedBox(width: 4.0),
+                            Text(
+                              '${offer['destinationLocation']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            SizedBox(height: 4.0),
-                            Row(
-                              children: [
-                                Image.asset(
-                                  'assets/images/img_7.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                SizedBox(width: 4.0),
-                                Text(' ${DateTime.parse(offer['departureDateTime']).toString()}'), // Text for Departure Date
-                              ],
+                            SizedBox(width: 70),
+                            Image.asset(
+                              'assets/images/img_8.png',
+                              width: 24,
+                              height: 24,
                             ),
-                            SizedBox(height: 4.0),
-                            Row(
-                              children: [
-                                Image.asset(
-                                  'assets/images/img_8.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                SizedBox(width: 4.0),
-                                Text('${offer['seatAvailable']}'),
-                                SizedBox(width: 20.0),
-                                Image.asset(
-                                  'assets/images/img_9.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                SizedBox(width: 4.0),
-                                Text('${offer['seatPrice']}'),
-                              ],
+                            SizedBox(width: 4.0),
+                            Text(
+                              '${offer['seatAvailable']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-
-                            SizedBox(height: 8.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () => deleteCar(offer['_id']),
-                                  child: Image.asset(
-                                    'assets/images/img_5.png',
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                                SizedBox(width: 70),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => UpdateOffrePage(
-                                          offerId: offer['_id'].toString(),
-                                          departureDateTime: offer['departureDateTime'].toString(),
-                                          departureLocation: offer['departureLocation'].toString(),
-                                          destinationLocation: offer['destinationLocation'].toString(),
-                                          seatPrice: offer['seatPrice'].toString(),
-                                          seatAvailable: offer['seatAvailable'].toString(),
+                          ],
+                        ),
+                        SizedBox(height: 8.0),
+                        Row(
+                          children: [
+                            Text(
+                              DateFormat('dd/MM/yyyy , HH:mm').format(DateTime.parse(offer['departureDateTime'])),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 70),
+                            Image.asset(
+                              'assets/images/img_9.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            SizedBox(width: 4.0),
+                            Text(
+                              '${offer['seatPrice']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateOffrePage(
+                                          offerId:
+                                          offer['_id'].toString(),
+                                          departureDateTime: offer[
+                                          'departureDateTime']
+                                              .toString(),
+                                          departureLocation: offer[
+                                          'departureLocation']
+                                              .toString(),
+                                          destinationLocation: offer[
+                                          'destinationLocation']
+                                              .toString(),
+                                          seatPrice: offer['seatPrice']
+                                              .toString(),
+                                          seatAvailable: offer[
+                                          'seatAvailable']
+                                              .toString(),
                                           model: offer['model'].toString(),
-                                          matricule: offer['matricule'].toString(),
+                                          matricule: offer['matricule']
+                                              .toString(),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                  child: Image.asset(
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Image.asset(
                                     'assets/images/img_4.png',
                                     width: 24,
                                     height: 24,
                                   ),
-                                ),
-                              ],
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Edit Offre ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-
+                            SizedBox(width: 30),
+                            InkWell(
+                              onTap: () => deleteCar(offer['_id']),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/img_5.png',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Delete Offre',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    );
-                  },
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddTrajet()),
+                );
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF009C77)),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Set text color to white
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                child: Text(
+                  'Add Trajet',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w100,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
         ],
       ),
+
     );
   }
 }

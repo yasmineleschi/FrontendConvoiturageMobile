@@ -31,7 +31,7 @@ class _SideBarState extends State<SideBar> {
       }
 
       final response = await http.get(
-        Uri.parse('http://172.16.18.126:5000/api/users/profile/$userId'),
+        Uri.parse('http://localhost:5000/api/users/profile/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -109,13 +109,13 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
-    leading: Icon(Icons.add),
-    title: Text('ADD TRAJECT'),
-    onTap: () {
-      Navigator.pushNamed(context, '/addOffer');
+            leading: Icon(Icons.add),
+            title: Text('ADD TRAJECT'),
+            onTap: () {
+              Navigator.pushNamed(context, '/addOffer');
 
-    },
-    ),
+            },
+          ),
           ListTile(
             leading: Icon(Icons.list),
             title: Text('test'),
