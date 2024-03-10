@@ -109,7 +109,7 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
-    leading: Icon(Icons.list),
+    leading: Icon(Icons.add),
     title: Text('ADD TRAJECT'),
     onTap: () {
       Navigator.pushNamed(context, '/addOffer');
@@ -117,7 +117,7 @@ class _SideBarState extends State<SideBar> {
     },
     ),
           ListTile(
-            leading: Icon(Icons.list),
+            leading: Icon(Icons.tips_and_updates),
             title: Text('test'),
             onTap: () {
               Navigator.pushNamed(context, '/test');

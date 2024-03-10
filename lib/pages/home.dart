@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
 import 'sidebar.dart';
+import 'AddTrajet.dart'; // Import the AddOffer page
 
 class HomePage extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -10,7 +11,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Home '),
+        title: Text('Home'),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
@@ -23,17 +24,15 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               Navigator.pushNamed(context, '/profile');
             },
-            icon: const CircleAvatar(
+            icon: CircleAvatar(
               // Placeholder user image (replace with actual user image or adjust as needed)
-              backgroundImage: AssetImage(
-                  'assets/images/car.png'), // Ensure the asset exists or adjust accordingly
+              backgroundImage: AssetImage('assets/images/car.png'),
             ),
           ),
         ],
       ),
-
       drawer: SideBar(), // Add your Sidebar widget here
-      body: const Center(
+      body: Center(
         child: Text(
           'Welcome to the Home Page!',
           style: TextStyle(
@@ -42,25 +41,14 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildMenuItems(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        ListTile(
-          leading: Icon(Icons.home),
-          title: Text('Add Offer'),
-          onTap: () {
-            Navigator.pushNamed(context, '/addOffer'); // Close the drawer
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('Settings'),
-          onTap: () {},
-        ),
-      ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/addOffer');
+        },
+        backgroundColor: Color(0xFF009C77), // Set button color
+        child: Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat, // Position the button at the bottom right
     );
   }
 }

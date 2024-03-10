@@ -2,7 +2,7 @@ import 'UpdaitOffre.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'SideBar.dart' ;
-
+import 'AddTrajet.dart' ;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -141,7 +141,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
         ],
       ),
       drawer: SideBar(), // Add the sidebar here
-
 
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -285,9 +284,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                               children: [
                                 InkWell(
 
-
-                                  onTap: () => deleteCar(offer.offerId),
-
+                                  onTap: () => deleteCar(offer['_id']),
 
                                   child: Image.asset(
                                     'assets/images/img_5.png',
@@ -333,10 +330,27 @@ class _MyOffersPageState extends State<MyOffersPage> {
             ),
           ),
         ],
+
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddTrajet(),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Color(0xFF009C77), // Set button background color
       ),
     );
   }
-}
+
+
+  }
+
+
 
 void main() {
   runApp(MaterialApp(

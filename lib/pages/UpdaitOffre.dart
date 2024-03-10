@@ -246,7 +246,9 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
 
         // Handle response based on status code
         if (response.statusCode == 200) {
-          // Car updated successfully
+          setState(() {
+
+          });
           _showSuccessDialog();
         } else {
           // Failed to update car
@@ -270,7 +272,12 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
       title: 'Success',
       desc: 'Offer updated successfully!',
       btnOkOnPress: () {
-        Navigator.pop(context); // Go back to MyOffrePage
+
+        setState(() {
+
+            Navigator.pushNamed(context, '/MyOffre');
+
+        });
       },
     ).show();
   }
