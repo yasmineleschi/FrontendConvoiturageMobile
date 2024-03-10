@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontendcovoituragemobile/pages/MyOffer.dart';
-import 'MyOffer.dart';
+import 'package:frontendcovoituragemobile/pages/offers/MyOffer.dart';
+import 'offers/MyOffer.dart';
 import 'home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -109,15 +109,15 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
-    leading: Icon(Icons.add),
-    title: Text('ADD TRAJECT'),
-    onTap: () {
-      Navigator.pushNamed(context, '/addOffer');
+            leading: Icon(Icons.add),
+            title: Text('ADD TRAJECT'),
+            onTap: () {
+              Navigator.pushNamed(context, '/addOffer');
 
-    },
-    ),
+            },
+          ),
           ListTile(
-            leading: Icon(Icons.tips_and_updates),
+            leading: Icon(Icons.list),
             title: Text('test'),
             onTap: () {
               Navigator.pushNamed(context, '/test');

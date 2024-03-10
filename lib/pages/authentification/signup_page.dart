@@ -261,7 +261,7 @@ class _SignupPageState extends State<SignupPage> {
             return "  Password can\'t be empty!";
           }
     if (value == null || value.isEmpty || value.length < 7 || !RegExp(r'[A-Z]').hasMatch(value)) {
-    return 'Password must be at least 7 characters long and include at least one uppercase letter.';
+    return 'Password must be at least 7 characters long \n and include at least one uppercase letter.';
     }
     return null;
     },
