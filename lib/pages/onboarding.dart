@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontendcovoituragemobile/Model/Onboarding.dart';
-import 'package:frontendcovoituragemobile/pages/login.dart';
+import 'package:frontendcovoituragemobile/pages/authentification/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {

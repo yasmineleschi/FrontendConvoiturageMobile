@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'home.dart';
-import 'Signup_page.dart';
+import '../home.dart';
+import 'package:frontendcovoituragemobile/pages/authentification/signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -259,7 +259,7 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
-
+ 
   bool _validateInputs() {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context)

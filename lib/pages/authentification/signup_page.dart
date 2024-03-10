@@ -20,7 +20,6 @@ class _SignupPageState extends State<SignupPage> {
   String? password;
   String? email;
 
-  late Map<String, dynamic> jwt_decoder_token;
   int? id;
 
   TextEditingController u = TextEditingController();
@@ -78,10 +77,13 @@ class _SignupPageState extends State<SignupPage> {
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           usernamefield(),
+          const SizedBox(height: 10),
           emailfield(),
+          const SizedBox(height: 10),
           passwordfield(),
+          const SizedBox(height: 10),
           Container(
             margin: const EdgeInsets.only(top: 20),
             height: 50,
@@ -146,29 +148,29 @@ class _SignupPageState extends State<SignupPage> {
 
   Widget usernamefield() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       alignment: Alignment.centerLeft,
-      decoration: BoxDecoration(
-          color: Color(0xFFECEAEA),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            )
-          ]),
-      height: 60,
       child: TextFormField(
         controller: u,
-        decoration: const InputDecoration(
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.only(top: 14),
-            prefixIcon: Icon(
+        decoration:  InputDecoration(
+            border: const OutlineInputBorder(  ),
+            labelText: 'Username',
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide( color :Color(0xFF009C77)),
+            ),
+            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
+
+            suffixIcon: IconButton(
+               onPressed: () {
+             setState(() {
+               u.clear();
+               });
+               },
+               icon: const Icon(Icons.clear),),
+            prefixIcon: const Icon(
               Icons.person,
               color: Colors.black,
             ),
-            hintText: 'Username',
+
             hintStyle: TextStyle(color: Colors.black38)),
         keyboardType: TextInputType.text,
         validator: (value) {
@@ -186,34 +188,36 @@ class _SignupPageState extends State<SignupPage> {
 
   Widget emailfield() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      alignment: Alignment.centerLeft,
-      decoration: BoxDecoration(
-          color: Color(0xFFECEAEA),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            )
-          ]),
-      height: 60,
+
       child: TextFormField(
         controller: e,
-        decoration: const InputDecoration(
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.only(top: 14),
-            prefixIcon: Icon(
+        decoration:  InputDecoration(
+            border: OutlineInputBorder(),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide( color :Color(0xFF009C77)),
+            ),
+
+            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
+            suffixIcon: IconButton(
+              onPressed: () {
+                setState(() {
+                  e.clear();
+                });
+              },
+              icon: const Icon(Icons.clear),),
+            prefixIcon: const Icon(
               Icons.email_outlined,
               color: Colors.black,
             ),
-            hintText: 'Email',
+           labelText: "Email",
+
             hintStyle: TextStyle(color: Colors.black38)),
         keyboardType: TextInputType.emailAddress,
         validator: (value) {
           if (value!.isEmpty) {
             return "  Email can\'t be empty!";
+          } if (value == null || value.isEmpty || !value.contains('@')) {
+            return 'Please enter a valid email';
           }
           return null;
         },
@@ -226,30 +230,21 @@ class _SignupPageState extends State<SignupPage> {
 
   Widget passwordfield() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      alignment: Alignment.centerLeft,
-      decoration: BoxDecoration(
-          color: Color(0xFFECEAEA),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            )
-          ]),
-      height: 60,
       child: TextFormField(
         controller: p,
         obscureText: hidepassword,
         decoration: InputDecoration(
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.only(top: 14),
+            border: OutlineInputBorder(),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide( color :Color(0xFF009C77)),
+            ),
+
+            floatingLabelStyle: const TextStyle(color:Color(0xFF009C77)),
             prefixIcon: const Icon(
               Icons.lock,
               color: Colors.black,
             ),
-            hintText: 'Password',
+            labelText: 'Password',
             hintStyle: const TextStyle(color: Colors.black38),
             suffixIcon: IconButton(
               onPressed: () {
@@ -265,8 +260,12 @@ class _SignupPageState extends State<SignupPage> {
           if (value!.isEmpty) {
             return "  Password can\'t be empty!";
           }
-          return null;
-        },
+    if (value == null || value.isEmpty || value.length < 7 || !RegExp(r'[A-Z]').hasMatch(value)) {
+    return 'Password must be at least 7 characters long \n and include at least one uppercase letter.';
+    }
+    return null;
+    },
+
         onSaved: (val) {
           password = val;
         },
