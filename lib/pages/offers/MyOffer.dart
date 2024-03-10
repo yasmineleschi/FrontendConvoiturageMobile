@@ -1,3 +1,6 @@
+
+
+
 import 'package:frontendcovoituragemobile/pages/offers/AddTrajet.dart';
 import 'package:frontendcovoituragemobile/pages/offers/UpdaitOffre.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +18,7 @@ class MyOffersPage extends StatefulWidget {
 
 class _MyOffersPageState extends State<MyOffersPage> {
   List<dynamic> _offers = [];
-  List<dynamic> _filteredOffers = [];
+  List<dynamic> filteredOffers = [];
 
   @override
   void initState() {
@@ -60,7 +63,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
       if (response.statusCode == 200) {
         setState(() {
           _offers = json.decode(response.body);
-          _filteredOffers = List.from(_offers);
+          filteredOffers = List.from(_offers);
         });
       } else {
         throw Exception('Failed to fetch offers');
@@ -90,14 +93,20 @@ class _MyOffersPageState extends State<MyOffersPage> {
   }
 
   void _filterOffersByDestination(String destination) {
-    setState(() {
-      _filteredOffers = _offers
-          .where((offer) => offer['destinationLocation']
-          .toString()
-          .toLowerCase()
-          .contains(destination.toLowerCase()))
-          .toList();
-    });
+    if (destination.isEmpty) {
+      setState(() {
+        filteredOffers = List.from(_offers);
+      });
+    } else {
+      setState(() {
+        filteredOffers = _offers
+            .where((offer) => offer['destinationLocation']
+            .toString()
+            .toLowerCase()
+            .contains(destination.toLowerCase()))
+            .toList();
+      });
+    }
   }
 
   @override
@@ -119,6 +128,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
 
       ),
       drawer: SideBar(),
+
 
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -150,186 +160,165 @@ class _MyOffersPageState extends State<MyOffersPage> {
               ),
             ),
           ),
-
           Expanded(
-            child: SingleChildScrollView(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height - kToolbarHeight - 20,
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    mainAxisSpacing: 10.0, // Increased spacing between offers
-                  ),
-                  itemCount: _filteredOffers.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final offer = _filteredOffers[index];
-                    return FutureBuilder(
-                      future: _fetchUserData(offer['user']),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        }
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        }
-                        return SingleChildScrollView(
-                            child:Container(
-                              height: 120,
-                              width: MediaQuery.of(context).size.width,
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 10),
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Color(0xFFD9D9D9),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    '${offer['departureLocation']} --> ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 4.0),
-                                  Text(
-                                    '${offer['destinationLocation']}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 70),
-                                  Image.asset(
-                                    'assets/images/img_8.png',
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                  SizedBox(width: 4.0),
-                                  Text(
-                                    '${offer['seatAvailable']}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 8.0),
-                              Row(
-                                children: [
-                                  Text(
-                                    DateFormat('dd/MM/yyyy , HH:mm').format(
-                                        DateTime.parse(
-                                            offer['departureDateTime'])),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 70),
-                                  Image.asset(
-                                    'assets/images/img_9.png',
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                  SizedBox(width: 4.0),
-                                  Text(
-                                    '${offer['seatPrice']}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 8.0),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              UpdateOffrePage(
-                                                offerId:
-                                                offer['_id'].toString(),
-                                                departureDateTime: offer[
-                                                'departureDateTime']
-                                                    .toString(),
-                                                departureLocation: offer[
-                                                'departureLocation']
-                                                    .toString(),
-                                                destinationLocation: offer[
-                                                'destinationLocation']
-                                                    .toString(),
-                                                seatPrice: offer['seatPrice']
-                                                    .toString(),
-                                                seatAvailable: offer[
-                                                'seatAvailable']
-                                                    .toString(),
-                                                model: offer['model'].toString(),
-                                                matricule: offer['matricule']
-                                                    .toString(),
-                                              ),
-                                        ),
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/images/img_4.png',
-                                          width: 24,
-                                          height: 24,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Edit Offre ',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 30),
-                                  InkWell(
-                                    onTap: () => deleteCar(offer['_id']),
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/images/img_5.png',
-                                          width: 24,
-                                          height: 24,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Delete Offre',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                            )
-                        );
-
-                      },
-                    );
+            child: ListView.builder(
+              itemCount: filteredOffers.length,
+              itemBuilder: (BuildContext context, int index) {
+                final offer = filteredOffers[index];
+                return GestureDetector(
+                  onTap: () {
+                    // Handle offer details navigation here
                   },
-                ),
-              ),
+                  child: Container(
+                    margin: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFFD9D9D9), Color(0xFFD9D9D9)],
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+
+                        SizedBox(height: 10.0),
+                        Row(
+                          children: [
+                            Text(
+                              '${offer['departureLocation']} --> ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 4.0),
+                            Text(
+                              '${offer['destinationLocation']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 70),
+                            Image.asset(
+                              'assets/images/img_8.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            SizedBox(width: 4.0),
+                            Text(
+                              '${offer['seatAvailable']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.0),
+                        Row(
+                          children: [
+                            Text(
+                              DateFormat('dd/MM/yyyy , HH:mm').format(DateTime.parse(offer['departureDateTime'])),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 70),
+                            Image.asset(
+                              'assets/images/img_9.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            SizedBox(width: 4.0),
+                            Text(
+                              '${offer['seatPrice']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        UpdateOffrePage(
+                                          offerId:
+                                          offer['_id'].toString(),
+                                          departureDateTime: offer[
+                                          'departureDateTime']
+                                              .toString(),
+                                          departureLocation: offer[
+                                          'departureLocation']
+                                              .toString(),
+                                          destinationLocation: offer[
+                                          'destinationLocation']
+                                              .toString(),
+                                          seatPrice: offer['seatPrice']
+                                              .toString(),
+                                          seatAvailable: offer[
+                                          'seatAvailable']
+                                              .toString(),
+                                          model: offer['model'].toString(),
+                                          matricule: offer['matricule']
+                                              .toString(),
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/img_4.png',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Edit Offre ',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 30),
+                            InkWell(
+                              onTap: () => deleteCar(offer['_id']),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/img_5.png',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Delete Offre',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
-
-
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: ElevatedButton(
@@ -363,15 +352,9 @@ class _MyOffersPageState extends State<MyOffersPage> {
 
         ],
       ),
+
     );
-
-
-
-
-
-
   }
-
 }
 
 void main() {
@@ -379,4 +362,3 @@ void main() {
     home: MyOffersPage(),
   ));
 }
-
