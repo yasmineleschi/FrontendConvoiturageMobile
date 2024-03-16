@@ -15,7 +15,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Demander la permission de localisation
   await Permission.location.request();
   runApp(const MyApp());
 
