@@ -144,8 +144,8 @@ class _MyOffersPageState extends State<MyOffersPage> {
                 decoration: InputDecoration(
                   hintText: 'Enter destination...',
                   filled: true,
-                  fillColor: Color(0xFFD9D9D9), // Background color
-                  contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0), // Padding around the text
+                  fillColor: const Color(0xFFD9D9D9), // Background color
+                  contentPadding: const  EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0), // Padding around the text
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Border radius
                     borderSide: BorderSide.none, // No border
@@ -174,7 +174,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
+                      gradient:const  LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [Color(0xFFD9D9D9), Color(0xFFD9D9D9)],
@@ -209,22 +209,22 @@ class _MyOffersPageState extends State<MyOffersPage> {
                             SizedBox(width: 4.0),
                             Text(
                               '${offer['seatAvailable']}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 8.0),
+                        const SizedBox(height: 8.0),
                         Row(
                           children: [
                             Text(
                               DateFormat('dd/MM/yyyy , HH:mm').format(DateTime.parse(offer['departureDateTime'])),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(width: 70),
+                            const SizedBox(width: 70),
                             Image.asset(
                               'assets/images/img_9.png',
                               width: 24,
@@ -280,8 +280,8 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                     width: 24,
                                     height: 24,
                                   ),
-                                  SizedBox(width: 8),
-                                  Text(
+                                  const SizedBox(width: 8),
+                                  const Text(
                                     'Edit Offre ',
                                     style: TextStyle(
                                       fontSize: 16,
@@ -290,7 +290,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                 ],
                               ),
                             ),
-                            SizedBox(width: 30),
+                           const  SizedBox(width: 30),
                             InkWell(
                               onTap: () => deleteCar(offer['_id']),
                               child: Row(
@@ -300,8 +300,8 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                     width: 24,
                                     height: 24,
                                   ),
-                                  SizedBox(width: 8),
-                                  Text(
+                                  const SizedBox(width: 8),
+                                  const Text(
                                     'Delete Offre',
                                     style: TextStyle(
                                       fontSize: 16,
@@ -337,8 +337,8 @@ class _MyOffersPageState extends State<MyOffersPage> {
                 ),
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Set text color to white
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
+              child: const Padding(
+                padding:  EdgeInsets.symmetric(vertical: 15.0),
                 child: Text(
                   'Add Trajet',
                   style: TextStyle(

@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/pages/SideBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
-
 
 class AddTrajet extends StatefulWidget {
   const AddTrajet({Key? key}) : super(key: key);
@@ -15,23 +15,24 @@ class AddTrajet extends StatefulWidget {
 
 class _AddTrajetState extends State<AddTrajet> {
   late GoogleMapController mapController;
-  int? _selectedSeats;
+  int selectedSeats = 1;
+
   @override
   void dispose() {
     mapController.dispose();
     super.dispose();
   }
-  static const _initialCameraPosition = CameraPosition(
-    target: LatLng(45.521563, -122.677433),
-    zoom: 11.5,
-  );
+
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _departureLocationController = TextEditingController();
-  final TextEditingController _destinationLocationController = TextEditingController();
-  final TextEditingController _departureDateTimeController = TextEditingController();
-  final TextEditingController _destinationDateTimeController = TextEditingController();
+  final TextEditingController _departureLocationController =
+      TextEditingController();
+  final TextEditingController _destinationLocationController =
+      TextEditingController();
+  final TextEditingController _departureDateTimeController =
+      TextEditingController();
+  final TextEditingController _destinationDateTimeController =
+      TextEditingController();
   final TextEditingController _seatPriceController = TextEditingController();
-  final TextEditingController _seatAvailableController = TextEditingController();
 
   List<Marker> _markers = [];
 
@@ -44,7 +45,7 @@ class _AddTrajetState extends State<AddTrajet> {
         backgroundColor: Color(0xFF009C77),
         leading: IconButton(
           onPressed: () {
-            _scaffoldKey.currentState!.openDrawer(); // Open the sidebar
+            _scaffoldKey.currentState!.openDrawer();
           },
           icon: Icon(Icons.menu),
         ),
@@ -71,6 +72,7 @@ class _AddTrajetState extends State<AddTrajet> {
           ),
         ],
       ),
+      drawer: SideBar(),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -158,7 +160,8 @@ class _AddTrajetState extends State<AddTrajet> {
             child: ElevatedButton(
               onPressed: _submitForm,
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF009C77)),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF009C77)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -185,7 +188,6 @@ class _AddTrajetState extends State<AddTrajet> {
       child: TextFormField(
         controller: _departureLocationController,
         onChanged: (value) {
-          // Call a method to add marker when text changes
           if (value.isNotEmpty) {
             _addDepartureMarker(value);
           }
@@ -219,13 +221,14 @@ class _AddTrajetState extends State<AddTrajet> {
       ),
     );
   }
+
   void _addDepartureMarker(String address) async {
     List<Location> locations = await locationFromAddress(address);
     if (locations.isNotEmpty) {
       Location location = locations.first;
       LatLng latLng = LatLng(location.latitude, location.longitude);
 
-      // Clear previous departure marker
+
       _markers.removeWhere((marker) => marker.markerId.value == 'departure');
 
       setState(() {
@@ -256,7 +259,8 @@ class _AddTrajetState extends State<AddTrajet> {
           floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
           prefixIcon: IconButton(
             icon: const Icon(Icons.calendar_today, color: Colors.black),
-            onPressed: () => _selectDateTime(context, _departureDateTimeController),
+            onPressed: () =>
+                _selectDateTime(context, _departureDateTimeController),
           ),
           hintStyle: const TextStyle(color: Colors.black38),
         ),
@@ -319,7 +323,6 @@ class _AddTrajetState extends State<AddTrajet> {
       Location location = locations.first;
       LatLng latLng = LatLng(location.latitude, location.longitude);
 
-
       _markers.removeWhere((marker) => marker.markerId.value == 'destination');
 
       setState(() {
@@ -334,7 +337,6 @@ class _AddTrajetState extends State<AddTrajet> {
       });
     }
   }
-
 
   Widget destinationDateTimeField(BuildContext context) {
     return Container(
@@ -351,7 +353,8 @@ class _AddTrajetState extends State<AddTrajet> {
           floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
           prefixIcon: IconButton(
             icon: const Icon(Icons.calendar_today, color: Colors.black),
-            onPressed: () => _selectDateTime(context, _destinationDateTimeController),
+            onPressed: () =>
+                _selectDateTime(context, _destinationDateTimeController),
           ),
           hintStyle: const TextStyle(color: Colors.black38),
         ),
@@ -405,32 +408,31 @@ class _AddTrajetState extends State<AddTrajet> {
   Widget SeatAvailablefield() {
     return Container(
       alignment: Alignment.centerLeft,
-      child: DropdownButtonFormField<String>(
-        value: _selectedSeats?.toString(),
+      child: DropdownButtonFormField<int>(
+        value: selectedSeats,
         onChanged: (newValue) {
           setState(() {
-            _selectedSeats = int.tryParse(newValue!);
+            selectedSeats = newValue!;
           });
         },
-        items: ["1", "2", "3", "4"].map((seatCount) {
-          return DropdownMenuItem<String>(
-            value: seatCount,
-            child: Text(seatCount),
+        items: [1, 2, 3, 4].map((int value) {
+          return DropdownMenuItem<int>(
+            value: value,
+            child: Text(value.toString()),
           );
         }).toList(),
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
           labelText: ' Seat Available',
-          focusedBorder: const OutlineInputBorder(
+          focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Color(0xFF009C77)),
           ),
-          floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
-
-          prefixIcon: const Icon(
+          floatingLabelStyle: TextStyle(color: Color(0xFF009C77)),
+          prefixIcon: Icon(
             Icons.airline_seat_recline_extra_rounded,
             color: Colors.black,
           ),
-          hintStyle: const TextStyle(color: Colors.black38),
+          hintStyle: TextStyle(color: Colors.black38),
         ),
         validator: (value) {
           if (value == null) {
@@ -442,9 +444,8 @@ class _AddTrajetState extends State<AddTrajet> {
     );
   }
 
-
-
-  Future<void> _selectDateTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDateTime(
+      BuildContext context, TextEditingController controller) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -453,7 +454,6 @@ class _AddTrajetState extends State<AddTrajet> {
     );
 
     if (pickedDate == null) {
-      // User canceled selecting date
       return;
     }
 
@@ -463,7 +463,6 @@ class _AddTrajetState extends State<AddTrajet> {
     );
 
     if (pickedTime == null) {
-      // User canceled selecting time
       return;
     }
 
@@ -493,25 +492,18 @@ class _AddTrajetState extends State<AddTrajet> {
       return;
     }
 
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('http://192.168.1.15:5000/api/car/'),
-    );
+    final apiUrl = 'http://192.168.1.15:5000/api/car/';
 
-    // Prepare the car data
-    Map<String, String> carData = {
+    Map<String, dynamic> carData = {
       'userId': userId,
       'departureLocation': _departureLocationController.text,
       'destinationLocation': _destinationLocationController.text,
       'departureDateTime': _departureDateTimeController.text,
       'destinationDateTime': _destinationDateTimeController.text,
       'seatPrice': _seatPriceController.text,
-      'seatAvailable': _seatAvailableController.text,
+      'seatAvailable': selectedSeats.toString(),
     };
-
     print('Creating car with data: $carData');
-
-    // Add markers for departure and destination locations on the map
     Marker departureMarker = Marker(
       markerId: MarkerId('departure'),
       position: _getLocationFromAddress(_departureLocationController.text),
@@ -531,16 +523,16 @@ class _AddTrajetState extends State<AddTrajet> {
     });
 
     try {
-      // Add car data to request
-      request.fields.addAll(carData);
-
-      var streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: jsonEncode(carData),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
 
       if (response.statusCode == 200) {
-        // Handle success
       } else {
-        // Handle error
         final errorResponse = json.decode(response.body);
         print('Error creating car: ${errorResponse['message']}');
       }
@@ -550,20 +542,21 @@ class _AddTrajetState extends State<AddTrajet> {
   }
 
   LatLng _getLocationFromAddress(String address) {
-
-    return LatLng(0, 0); // Dummy coordinates, replace with actual logic
+    return LatLng(0, 0);
   }
 
   void _onMapTap(LatLng latLng) async {
-    List<Placemark> placemarks = await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
     Placemark placemark = placemarks.first;
-    String address = '${placemark.name}, ${placemark.street}, ${placemark.locality}, ${placemark.country}';
+    String address =
+        '${placemark.name}, ${placemark.street}, ${placemark.locality}, ${placemark.country}';
 
     if (_departureLocationController.text.isEmpty) {
       setState(() {
         _departureLocationController.text = address;
       });
-      // Add marker for departure location
+
       _markers.add(
         Marker(
           markerId: MarkerId('departure'),
@@ -575,7 +568,7 @@ class _AddTrajetState extends State<AddTrajet> {
       setState(() {
         _destinationLocationController.text = address;
       });
-      // Add marker for destination location
+
       _markers.add(
         Marker(
           markerId: MarkerId('destination'),
@@ -585,6 +578,4 @@ class _AddTrajetState extends State<AddTrajet> {
       );
     }
   }
-
-
 }

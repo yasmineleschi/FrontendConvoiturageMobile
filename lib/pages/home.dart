@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'authentification/profile.dart';
+
 import 'offers/AddTrajet.dart';
-import 'sidebar.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   Future<Map<String, dynamic>> _fetchUserData(String user) async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/users/profile/$user'),
+        Uri.parse('http://192.168.1.15:5000/api/users/profile/$user'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchOffers() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/car/'),
+        Uri.parse('http://192.168.1.15:5000/api/car/'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -194,7 +194,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      backgroundColor: Colors.white, // Set the background color to white
+      backgroundColor: Colors.white,
 
       body: Column(
 

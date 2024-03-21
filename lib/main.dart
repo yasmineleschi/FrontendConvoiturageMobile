@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:frontendcovoituragemobile/pages/offers/AddTrajet.dart';
-import 'package:frontendcovoituragemobile/pages/MapsPage.dart';
+import 'package:frontendcovoituragemobile/pages/test.dart';
 import 'package:frontendcovoituragemobile/pages/home.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/signup_page.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/login.dart';
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/profile': (context) => ProfilPage(),
         '/addOffer': (context) => AddTrajet(),
-        '/test': (context) => MapsPage(),
+        '/test': (context) => AddCarForm(),
       },
     );
   }
