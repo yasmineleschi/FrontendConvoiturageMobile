@@ -181,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLoginButton() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: const Color(0xFF009C77),
+        backgroundColor: const Color(0xFF009C77),
       ),
       onPressed: _isLoading ? null : _login,
       child: _isLoading
@@ -206,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       try {
-        final url = Uri.parse('http://192.168.1.15:5000/api/users/login');
+        final url = Uri.parse('http://localhost:5000/api/users/login');
         final headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         };

@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   Future<Map<String, dynamic>> _fetchUserData(String user) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/users/profile/$user'),
+        Uri.parse('http://localhost:5000/api/users/profile/$user'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchOffers() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/car/'),
+        Uri.parse('http://localhost:5000/api/car/'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -277,7 +277,7 @@ class _HomePageState extends State<HomePage> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF009C77), // Background color
+                    backgroundColor: Color(0xFF009C77), // Background color
                   ),
                   child: Text(
                     'Show Offers',
@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xFFDA6D35), // Background color
+                    backgroundColor: Color(0xFFDA6D35), // Background color
                   ),
                   child: Row(
                     children: [
