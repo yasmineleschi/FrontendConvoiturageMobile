@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'authentification/profile.dart';
 import 'sidebar.dart';
 import 'package:intl/intl.dart';
-
+import 'offers/DetailTrajet.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -329,7 +329,12 @@ class _HomePageState extends State<HomePage> {
                   final offer = filteredOffers[index];
                   return GestureDetector(
                     onTap: () {
-                      // Handle offer details navigation here
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OfferDetailPage(offer: offer),
+                        ),
+                      );
                     },
 
                     child: Container(
