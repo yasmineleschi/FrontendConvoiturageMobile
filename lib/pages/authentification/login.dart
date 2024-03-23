@@ -196,6 +196,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+
   Future<void> _login() async {
     if (_validateInputs()) {
       setState(() {
@@ -259,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
- 
+
   bool _validateInputs() {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context)
