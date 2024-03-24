@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/profile': (context) => ProfilPage(),
         '/addOffer': (context) => AddTrajet(),
-        '/test': (context) => AddCarForm(),
+        '/test': (context) => Profil(),
       },
     );
   }

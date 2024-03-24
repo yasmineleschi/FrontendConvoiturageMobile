@@ -109,10 +109,10 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.add),
-            title: Text('ADD TRAJECT'),
+            leading: Icon(Icons.favorite),
+            title: const Text('my Favorite'),
             onTap: () {
-              Navigator.pushNamed(context, '/addOffer');
+              Navigator.pushNamed(context, '/favorite');
 
             },
           ),

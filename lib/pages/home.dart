@@ -194,7 +194,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFF009C77),
 
       body: Column(
 
