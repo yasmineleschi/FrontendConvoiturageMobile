@@ -1,13 +1,10 @@
-
-
-
 import 'package:frontendcovoituragemobile/pages/offers/AddTrajet.dart';
 import 'package:frontendcovoituragemobile/pages/offers/UpdaitOffre.dart';
+import 'package:frontendcovoituragemobile/pages/offers/DetailTrajet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../SideBar.dart';
 import 'package:intl/intl.dart';
-
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,7 +24,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
   }
 
   Future<void> deleteCar(String carId) async {
-    final url = 'http://localhost:5000/api/car/$carId';
+    final url = 'http://192.168.1.15:5000/api/car/$carId';
     try {
       final response = await http.delete(Uri.parse(url));
 
@@ -38,8 +35,8 @@ class _MyOffersPageState extends State<MyOffersPage> {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Car deleted successfully')));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${response.body}')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -55,7 +52,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
         throw Exception('User ID is null');
       }
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/car/user/$userId'),
+        Uri.parse('http://192.168.1.15:5000/api/car/user/$userId'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -76,7 +73,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
   Future<Map<String, dynamic>> _fetchUserData(String userId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/users/profile/$userId'),
+        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -101,9 +98,9 @@ class _MyOffersPageState extends State<MyOffersPage> {
       setState(() {
         filteredOffers = _offers
             .where((offer) => offer['destinationLocation']
-            .toString()
-            .toLowerCase()
-            .contains(destination.toLowerCase()))
+                .toString()
+                .toLowerCase()
+                .contains(destination.toLowerCase()))
             .toList();
       });
     }
@@ -113,8 +110,19 @@ class _MyOffersPageState extends State<MyOffersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Offers'),
+        backgroundColor: Color(0xFF009C77),
+        title: const Text(
+          'My Offers',
+          style: TextStyle(
+            fontStyle: FontStyle.italic,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          textAlign: TextAlign.center,
+        ),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -125,11 +133,8 @@ class _MyOffersPageState extends State<MyOffersPage> {
             );
           },
         ),
-
       ),
       drawer: SideBar(),
-
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -145,7 +150,9 @@ class _MyOffersPageState extends State<MyOffersPage> {
                   hintText: 'Enter destination...',
                   filled: true,
                   fillColor: const Color(0xFFD9D9D9), // Background color
-                  contentPadding: const  EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0), // Padding around the text
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0,
+                      horizontal: 20.0), // Padding around the text
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0), // Border radius
                     borderSide: BorderSide.none, // No border
@@ -167,14 +174,19 @@ class _MyOffersPageState extends State<MyOffersPage> {
                 final offer = filteredOffers[index];
                 return GestureDetector(
                   onTap: () {
-                    // Handle offer details navigation here
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OfferDetailPage(offer: offer),
+                      ),
+                    );
                   },
                   child: Container(
                     margin: EdgeInsets.all(20),
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      gradient:const  LinearGradient(
+                      gradient: const LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [Color(0xFFD9D9D9), Color(0xFFD9D9D9)],
@@ -183,7 +195,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-
                         SizedBox(height: 10.0),
                         Row(
                           children: [
@@ -219,7 +230,8 @@ class _MyOffersPageState extends State<MyOffersPage> {
                         Row(
                           children: [
                             Text(
-                              DateFormat('dd/MM/yyyy , HH:mm').format(DateTime.parse(offer['departureDateTime'])),
+                              DateFormat('dd/MM/yyyy , HH:mm').format(
+                                  DateTime.parse(offer['departureDateTime'])),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -248,28 +260,21 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        UpdateOffrePage(
-                                          offerId:
-                                          offer['_id'].toString(),
-                                          departureDateTime: offer[
-                                          'departureDateTime']
+                                    builder: (context) => UpdateOffrePage(
+                                      offerId: offer['_id'].toString(),
+                                      departureDateTime:
+                                          offer['departureDateTime'].toString(),
+                                      departureLocation:
+                                          offer['departureLocation'].toString(),
+                                      destinationLocation:
+                                          offer['destinationLocation']
                                               .toString(),
-                                          departureLocation: offer[
-                                          'departureLocation']
-                                              .toString(),
-                                          destinationLocation: offer[
-                                          'destinationLocation']
-                                              .toString(),
-                                          seatPrice: offer['seatPrice']
-                                              .toString(),
-                                          seatAvailable: offer[
-                                          'seatAvailable']
-                                              .toString(),
-                                          model: offer['model'].toString(),
-                                          matricule: offer['matricule']
-                                              .toString(),
-                                        ),
+                                      seatPrice: offer['seatPrice'].toString(),
+                                      seatAvailable:
+                                          offer['seatAvailable'].toString(),
+                                      model: offer['model'].toString(),
+                                      matricule: offer['matricule'].toString(),
+                                    ),
                                   ),
                                 );
                               },
@@ -290,7 +295,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                 ],
                               ),
                             ),
-                           const  SizedBox(width: 30),
+                            const SizedBox(width: 30),
                             InkWell(
                               onTap: () => deleteCar(offer['_id']),
                               child: Row(
@@ -319,40 +324,31 @@ class _MyOffersPageState extends State<MyOffersPage> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddTrajet()),
-                );
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF009C77)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Set text color to white
-              ),
-              child: const Padding(
-                padding:  EdgeInsets.symmetric(vertical: 15.0),
-                child: Text(
-                  'Add Trajet',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w100,
-                  ),
-                ),
-              ),
-            ),
-          ),
 
         ],
-      ),
 
+      ),
+      floatingActionButton: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFF009C77),
+        ),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddTrajet()),
+            );
+          },
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          backgroundColor: Colors.transparent,
+        ),
+      ),
     );
   }
 }

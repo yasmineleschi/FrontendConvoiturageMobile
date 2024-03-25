@@ -4,7 +4,7 @@ class CarRide {
   final DateTime departureDateTime;
   final String departureLocation;
   final String destinationLocation;
-  final DateTime? destinationDateTime; // Making this optional
+  final DateTime? destinationDateTime;
   final double seatPrice;
   final int seatAvailable;
   final String user;

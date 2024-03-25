@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/pages/Favorite.dart';
 import 'package:frontendcovoituragemobile/pages/offers/MyOffer.dart';
-import 'offers/MyOffer.dart';
 import 'home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -13,11 +13,19 @@ class SideBar extends StatefulWidget {
 
 class _SideBarState extends State<SideBar> {
   late String _username = '';
-
+  late String _userId = '';
+  Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
+  }
+  late String? loggedInUserId;
   @override
   void initState() {
     super.initState();
     _fetchUserData();
+    getUserId().then((userId) {
+      loggedInUserId = userId;
+    });
   }
 
   Future<void> _fetchUserData() async {
@@ -31,7 +39,7 @@ class _SideBarState extends State<SideBar> {
       }
 
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/users/profile/$userId'),
+        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -41,6 +49,7 @@ class _SideBarState extends State<SideBar> {
         final userData = json.decode(response.body);
         setState(() {
           _username = userData['username'];
+          _userId = userData['_id'];
         });
       } else {
         print('Failed to load user data. Status code: ${response.statusCode}');
@@ -103,25 +112,16 @@ class _SideBarState extends State<SideBar> {
                 context,
                 MaterialPageRoute(builder: (context) => MyOffersPage()),
               );
-
-
-
             },
           ),
           ListTile(
             leading: Icon(Icons.favorite),
-            title: const Text('my Favorite'),
+            title: const Text('My Favorite'),
             onTap: () {
-              Navigator.pushNamed(context, '/favorite');
-
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.list),
-            title: Text('test'),
-            onTap: () {
-              Navigator.pushNamed(context, '/test');
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FavoriteListPage(userId: loggedInUserId)),
+              );
             },
           ),
           ListTile(

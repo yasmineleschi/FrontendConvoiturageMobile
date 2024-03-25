@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/pages/Favorite.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +28,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   }
 
   Future<void> fetchComments() async {
-    final response = await http.get(Uri.parse('http://localhost:5000/api/car/api/comments/${widget.offer['_id']}'));
+    final response = await http.get(Uri.parse('http://192.168.1.15:5000/api/car/api/comments/${widget.offer['_id']}'));
     if (response.statusCode == 200) {
       setState(() {
         comments = json.decode(response.body);
@@ -45,11 +46,11 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
 
   Future<void> _sendComment() async {
     final commentContent = _commentController.text;
-    final userId = loggedInUserId; // Retrieve user ID
+    final userId = loggedInUserId;
 
     if (userId != null) {
-      final carId = widget.offer['_id']; // Extract car ID from the offer object
-      final url = Uri.parse('http://localhost:5000/api/car/api/comments/$carId');
+      final carId = widget.offer['_id'];
+      final url = Uri.parse('http://192.168.1.15:5000/api/car/api/comments/$carId');
       final headers = <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       };
@@ -81,11 +82,53 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
     }
   }
 
+  bool isFavorite = false;
+
+  Future<void> addFavorite(String? userId, String carId) async {
+    if (userId != null) {
+      final url = Uri.parse('http://192.168.1.15:5000/api/favorie/$userId/$carId');
+      final headers = <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      };
+      final body = jsonEncode({'user': userId, 'car': carId});
+
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 201) {
+        setState(() {
+          isFavorite = true;
+        });
+        print('Car added to favorites successfully');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FavoriteListPage(userId: userId)),
+        );
+      } else {
+        print('Failed to add car to favorites');
+      }
+    } else {
+      print('User ID not found');
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Offer Detail'),
+        backgroundColor: Color(0xFF009C77),
+        title: const Text('Offer Detail',
+          style: TextStyle(
+            fontStyle: FontStyle.italic,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -99,6 +142,19 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                IconButton(
+
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : null,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isFavorite = !isFavorite;
+                    });
+                    addFavorite(loggedInUserId, widget.offer['_id']);
+                  },
+                ),
                 Center(
                   child: SizedBox(
                     width: 200.0, // Set your desired width

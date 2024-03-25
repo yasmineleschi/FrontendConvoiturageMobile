@@ -492,7 +492,7 @@ class _AddTrajetState extends State<AddTrajet> {
       return;
     }
 
-    final apiUrl = 'http://localhost:5000/api/car/';
+    final apiUrl = 'http://192.168.1.15:5000/api/car/';
 
     Map<String, dynamic> carData = {
       'userId': userId,

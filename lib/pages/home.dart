@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   Future<Map<String, dynamic>> _fetchUserData(String user) async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/users/profile/$user'),
+        Uri.parse('http://192.168.1.15:5000/api/users/profile/$user'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchOffers() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/car/'),
+        Uri.parse('http://192.168.1.15:5000/api/car/'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -177,9 +177,18 @@ class _HomePageState extends State<HomePage> {
     List<dynamic> filteredOffers = _applyFilters();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF009C77),
+        title: Text('Home',
+          style: TextStyle(
+            fontStyle: FontStyle.italic,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          textAlign: TextAlign.center,
+        ),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: CircleAvatar(
@@ -194,7 +203,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      backgroundColor: Color(0xFF009C77),
+
 
       body: Column(
 
@@ -512,7 +521,6 @@ class _HomePageState extends State<HomePage> {
 
 
 void main() {
-  // Initialize WebView
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
     home: HomePage(),

@@ -3,11 +3,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:frontendcovoituragemobile/pages/offers/AddTrajet.dart';
-import 'package:frontendcovoituragemobile/pages/test.dart';
+import 'package:frontendcovoituragemobile/pages/Favorite.dart';
 import 'package:frontendcovoituragemobile/pages/home.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/signup_page.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/login.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/profile.dart';
+
 import 'package:frontendcovoituragemobile/pages/splash_animated_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/profile': (context) => ProfilPage(),
         '/addOffer': (context) => AddTrajet(),
-        '/test': (context) => Profil(),
+
       },
     );
   }
