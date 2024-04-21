@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontendcovoituragemobile/pages/SideBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+
 
 class AddTrajet extends StatefulWidget {
   const AddTrajet({Key? key}) : super(key: key);
@@ -17,165 +20,148 @@ class _AddTrajetState extends State<AddTrajet> {
   late GoogleMapController mapController;
   int selectedSeats = 1;
 
-  @override
-  void dispose() {
-    mapController.dispose();
-    super.dispose();
-  }
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _departureLocationController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _destinationLocationController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _departureDateTimeController =
-      TextEditingController();
-  final TextEditingController _destinationDateTimeController =
-      TextEditingController();
+  TextEditingController();
+
   final TextEditingController _seatPriceController = TextEditingController();
 
   List<Marker> _markers = [];
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Color(0xFF009C77),
-        leading: IconButton(
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
-          },
-          icon: Icon(Icons.menu),
-        ),
-        title: const Text(
-          "Add Offer",
-          style: TextStyle(
-            fontStyle: FontStyle.italic,
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile');
+      body: Stack(
+        children: [
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(33.892166,  9.561555499999997),
+              zoom: 14,
+            ),
+            onMapCreated: (controller) {
+              mapController = controller;
             },
-            icon: const CircleAvatar(
-              backgroundImage: AssetImage('assets/images/car.png'),
-            ),
+            onTap: _onMapTap,
+            markers: _markers.toSet(),
           ),
-        ],
-      ),
-      drawer: SideBar(),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: _formadd(context),
-        ),
-      ),
-    );
-  }
-
-  Widget _formadd(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: <Widget>[
-          const SizedBox(height: 5),
-          const Text(
-            "From *",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 10),
-          DepartureLocationfield(),
-          const SizedBox(height: 10),
-          departureDateTimeField(context),
-          const SizedBox(height: 10),
-          const Text(
-            "To *",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Destinationfield(),
-          const SizedBox(height: 10),
-          destinationDateTimeField(context),
-          const SizedBox(height: 10),
-          const Text(
-            "Details",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: SeatPricefield(),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: SeatAvailablefield(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Container(
-            margin: const EdgeInsets.only(top: 10),
-            height: 400,
-            child: GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(0, 0),
-                zoom: 11.5,
-              ),
-              onMapCreated: (controller) {
-                mapController = controller;
-              },
-              onTap: _onMapTap,
-              markers: _markers.toSet(),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            margin: const EdgeInsets.only(top: 20),
-            height: 50,
-            width: 150,
-            child: ElevatedButton(
-              onPressed: _submitForm,
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Color(0xFF009C77)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+          DraggableScrollableSheet(
+            initialChildSize: 0.4,
+            minChildSize: 0.2,
+            maxChildSize: 0.7,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
                 ),
-              ),
-              child: const Text(
-                "Add",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const SizedBox(height: 10),
+                      Center(
+                        child: Text(
+                          "Add New Offer",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),),
+                          const SizedBox(height: 10),
+                          Text(
+                            "From *",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          DepartureLocationfield(),
+                          const SizedBox(height: 10),
+
+                          Text(
+                            "To *",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Destinationfield(),
+
+                          Center(
+                            child:Text(
+                            "Details",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+
+                          ),
+                          ),
+                          const SizedBox(height: 10),
+                          departureDateTimeField(context),
+                          const SizedBox(height: 10),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+
+                              Expanded(
+                                child: SeatPricefield(),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: SeatAvailablefield(),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          Center (
+                            child: ElevatedButton(
+                              onPressed: _submitForm,
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(
+                                  Color(0xFF009C77),
+                                ),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                              ),
+                              child: const Text(
+                                "Add",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),
@@ -338,35 +324,7 @@ class _AddTrajetState extends State<AddTrajet> {
     }
   }
 
-  Widget destinationDateTimeField(BuildContext context) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      child: TextFormField(
-        controller: _destinationDateTimeController,
-        readOnly: true,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
-          labelText: 'Destination Date & Time',
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFF009C77)),
-          ),
-          floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
-          prefixIcon: IconButton(
-            icon: const Icon(Icons.calendar_today, color: Colors.black),
-            onPressed: () =>
-                _selectDateTime(context, _destinationDateTimeController),
-          ),
-          hintStyle: const TextStyle(color: Colors.black38),
-        ),
-        validator: (value) {
-          if (value!.isEmpty) {
-            return "Destination date & time can't be empty!";
-          }
-          return null;
-        },
-      ),
-    );
-  }
+
 
   Widget SeatPricefield() {
     return Container(
@@ -499,11 +457,11 @@ class _AddTrajetState extends State<AddTrajet> {
       'departureLocation': _departureLocationController.text,
       'destinationLocation': _destinationLocationController.text,
       'departureDateTime': _departureDateTimeController.text,
-      'destinationDateTime': _destinationDateTimeController.text,
       'seatPrice': _seatPriceController.text,
       'seatAvailable': selectedSeats.toString(),
     };
     print('Creating car with data: $carData');
+    _showSuccessDialog();
     Marker departureMarker = Marker(
       markerId: MarkerId('departure'),
       position: _getLocationFromAddress(_departureLocationController.text),
@@ -535,9 +493,12 @@ class _AddTrajetState extends State<AddTrajet> {
       } else {
         final errorResponse = json.decode(response.body);
         print('Error creating car: ${errorResponse['message']}');
+        _showErrorDialog();
       }
     } catch (e) {
+      _showErrorDialog();
       print('An unexpected error occurred: $e');
+
     }
   }
 
@@ -545,9 +506,10 @@ class _AddTrajetState extends State<AddTrajet> {
     return LatLng(0, 0);
   }
 
+
   void _onMapTap(LatLng latLng) async {
     List<Placemark> placemarks =
-        await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+    await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
     Placemark placemark = placemarks.first;
     String address =
         '${placemark.name}, ${placemark.street}, ${placemark.locality}, ${placemark.country}';
@@ -576,6 +538,30 @@ class _AddTrajetState extends State<AddTrajet> {
           infoWindow: InfoWindow(title: 'Destination'),
         ),
       );
+    } else {
+      // Both departure and destination fields are filled, do not add marker
+      // You can show a message or handle this case as needed
+      print('Both departure and destination are already set.');
     }
+  }
+
+  void _showSuccessDialog() {
+    AwesomeDialog(
+      context: context,
+      title: 'Success',
+      desc: 'Offer updated successfully!',
+      btnOkOnPress: () {
+        Navigator.pop(context);
+      },
+    ).show();
+  }
+
+  void _showErrorDialog() {
+    AwesomeDialog(
+      context: context,
+      title: 'Error',
+      desc: 'Failed to update offer. Please try again later.',
+      btnOkOnPress: () {},
+    ).show();
   }
 }

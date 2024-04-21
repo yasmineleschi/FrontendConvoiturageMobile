@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       ),
 
       routes: {
-        '/': (context) => AnimatedSplashScreen(),
+        '/': (context) => AddTrajet(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/home': (context) => HomePage(),
