@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
   bool _isLoading = false;
-
+  bool hidepassword = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,19 +152,21 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildPasswordField() {
     return TextFormField(
       controller: _passwordController,
-      obscureText: true,
+      obscureText: hidepassword,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         labelText: 'Password',
         prefixIcon: Icon(Icons.lock), // Add icon for password
-        suffixIcon: IconButton(
-          onPressed: () {
-            setState(() {
-              _passwordController.clear();
-            });
-          },
-          icon: const Icon(Icons.clear),
-        ),
+          suffixIcon: IconButton(
+            onPressed: () {
+              setState(() {
+                hidepassword = !hidepassword;
+              });
+            },
+            color: Colors.black.withOpacity(0.7),
+            icon:
+            Icon(hidepassword ? Icons.visibility_off : Icons.visibility),
+          )
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {

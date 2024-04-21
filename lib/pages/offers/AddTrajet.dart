@@ -32,6 +32,7 @@ class _AddTrajetState extends State<AddTrajet> {
 
   List<Marker> _markers = [];
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,13 +42,15 @@ class _AddTrajetState extends State<AddTrajet> {
             mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
               target: LatLng(33.892166,  9.561555499999997),
-              zoom: 14,
+              zoom: 5,
             ),
             onMapCreated: (controller) {
               mapController = controller;
             },
             onTap: _onMapTap,
             markers: _markers.toSet(),
+
+
           ),
           DraggableScrollableSheet(
             initialChildSize: 0.4,
@@ -503,7 +506,7 @@ class _AddTrajetState extends State<AddTrajet> {
   }
 
   LatLng _getLocationFromAddress(String address) {
-    return LatLng(0, 0);
+    return LatLng(33.892166,  9.561555499999997);
   }
 
 
@@ -539,8 +542,7 @@ class _AddTrajetState extends State<AddTrajet> {
         ),
       );
     } else {
-      // Both departure and destination fields are filled, do not add marker
-      // You can show a message or handle this case as needed
+
       print('Both departure and destination are already set.');
     }
   }
@@ -548,20 +550,27 @@ class _AddTrajetState extends State<AddTrajet> {
   void _showSuccessDialog() {
     AwesomeDialog(
       context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.bottomSlide,
       title: 'Success',
-      desc: 'Offer updated successfully!',
+      desc: 'Offer added successfully!',
       btnOkOnPress: () {
         Navigator.pop(context);
       },
+      btnOkColor: Colors.green,
     ).show();
+
   }
 
   void _showErrorDialog() {
     AwesomeDialog(
       context: context,
+      dialogType: DialogType.error,
+      animType: AnimType.bottomSlide,
       title: 'Error',
       desc: 'Failed to update offer. Please try again later.',
       btnOkOnPress: () {},
+      btnOkColor: Colors.red,
     ).show();
   }
 }

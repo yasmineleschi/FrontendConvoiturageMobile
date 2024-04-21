@@ -138,6 +138,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
             elevation: 4.0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15.0),
+
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
