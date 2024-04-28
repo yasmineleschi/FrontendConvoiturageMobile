@@ -16,6 +16,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<dynamic> _offers = [];
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Disponible':
+        return Colors.green;
+      case 'En cours':
+        return Colors.orange;
+      case 'Indisponible':
+        return Colors.red;
+      default:
+        return Colors.black;
+    }
+  }
   TextEditingController _dateController = TextEditingController();
   TextEditingController _destinationController = TextEditingController();
   TextEditingController _departureController = TextEditingController();
@@ -62,8 +74,10 @@ class _HomePageState extends State<HomePage> {
         },
       );
       if (response.statusCode == 200) {
+        // Traiter les offres en utilisant processOffers
+        List<dynamic> processedOffers = processOffers(json.decode(response.body));
         setState(() {
-          _offers = json.decode(response.body);
+          _offers = processedOffers;
         });
       } else {
         throw Exception('Failed to fetch offers');
@@ -73,6 +87,7 @@ class _HomePageState extends State<HomePage> {
       // Handle error here (e.g., show Snackbar or AlertDialog)
     }
   }
+
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -170,7 +185,27 @@ class _HomePageState extends State<HomePage> {
 
     return filteredOffers;
   }
+  List<dynamic> processOffers(List<dynamic> _offers) {
 
+    List<dynamic> filteredOffers = _offers.where((offer) => offer['status'] != 'Indisponible').toList();
+
+    // Trier les offres par statut
+    filteredOffers.sort((a, b) {
+      if (a['status'] == 'Disponible' && b['status'] != 'Disponible') {
+        return -1;
+      } else if (a['status'] != 'Disponible' && b['status'] == 'Disponible') {
+        return 1;
+      } else if (a['status'] == 'En cours' && b['status'] != 'En cours') {
+        return -1;
+      } else if (a['status'] != 'En cours' && b['status'] == 'En cours') {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
+    return filteredOffers;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -347,15 +382,16 @@ class _HomePageState extends State<HomePage> {
                     },
 
                     child: Container(
-                      margin: EdgeInsets.all(20),
-                      padding: EdgeInsets.all(20),
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Color(0xFFD9D9D9), Color(0xFFD9D9D9)]
-                          )
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [ Color(0xFFFFFFFF)],
+
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -393,60 +429,151 @@ class _HomePageState extends State<HomePage> {
                           ),
 
                           SizedBox(height: 10.0),
-                          Row(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '${offer['departureLocation']} --> ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        DateFormat('HH:mm').format(DateTime.parse(offer['departureDateTime'])),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+
+                                        ),
+                                      ),
+                                      Text(
+                                        DateFormat('dd/MM/yyyy').format(DateTime.parse(offer['departureDateTime'])),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.black,
+                                        ),
+
+                                      ),
+                                      Text(
+                                        "Starting at",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey,
+                                        ),
+
+                                      ),
+                                    ],
+                                  ),
+
+                                  Column(
+                                    children: [
+                                      Text(
+                                        '${offer['seatPrice']}/Dt ',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Price',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        '${offer['seatAvailable']} ',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Seat Available',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              SizedBox(width: 4.0),
-                              Text(
-                                '${offer['destinationLocation']}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Divider(),
+                              SizedBox(height: 12),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Row(children: [
+
+                                    Image.asset(
+                                      'assets/images/depart.png',
+                                      width: 14,
+                                      height: 14,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '${offer['departureLocation']}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],),
+
+                                  SizedBox(height: 10),
+                                  Row(children: [
+                                    Image.asset(
+                                      'assets/images/destination.png',
+                                      width: 14,
+                                      height: 14,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '${offer['destinationLocation']}',
+
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+
+                                  ],),
+
+                                ],
                               ),
-                              SizedBox(width: 70),
-                              Image.asset(
-                                'assets/images/img_8.png',
-                                width: 24,
-                                height: 24,
-                              ),
-                              SizedBox(width: 4.0),
-                              Text(
-                                '${offer['seatAvailable']}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              Text(
-                                DateFormat('dd/MM/yyyy , HH:mm').format(
-                                    DateTime.parse(
-                                        offer['departureDateTime'])),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(width: 70),
-                              Image.asset(
-                                'assets/images/img_9.png',
-                                width: 24,
-                                height: 24,
-                              ),
-                              SizedBox(width: 4.0),
-                              Text(
-                                '${offer['seatPrice']}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+
+                              Divider(),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    'Status :',
+                                    style: TextStyle(
+                                      fontSize: 14, color: Colors.black,      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '${offer['status']}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+
+                                      color: _getStatusColor(offer['status']),
+                                    ),
+                                  ),
+
+                                ],),
+                              SizedBox(height: 12),
+
                             ],
                           ),
 

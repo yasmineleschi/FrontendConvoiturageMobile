@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -17,6 +16,7 @@ class UpdateOffrePage extends StatefulWidget {
   final String seatAvailable;
   final String model;
   final String matricule;
+  final String status;
 
   UpdateOffrePage({
     required this.offerId,
@@ -27,6 +27,7 @@ class UpdateOffrePage extends StatefulWidget {
     required this.seatAvailable,
     required this.model,
     required this.matricule,
+    required this.status,
   });
 
   @override
@@ -36,9 +37,9 @@ class UpdateOffrePage extends StatefulWidget {
 class _UpdateOffrePageState extends State<UpdateOffrePage> {
   TextEditingController _departureDateTimeController = TextEditingController();
   TextEditingController _departureLocationController = TextEditingController();
-  TextEditingController _destinationLocationController = TextEditingController();
+  TextEditingController _destinationLocationController =
+      TextEditingController();
   TextEditingController _seatPriceController = TextEditingController();
-  TextEditingController _seatAvailableController = TextEditingController();
   TextEditingController _modelController = TextEditingController();
   TextEditingController _matriculeController = TextEditingController();
   late GoogleMapController mapController;
@@ -50,16 +51,19 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
     _initializeFormFields();
   }
 
+  late int selectedSeats;
   void _initializeFormFields() {
     _departureDateTimeController.text = widget.departureDateTime;
     _departureLocationController.text = widget.departureLocation;
     _destinationLocationController.text = widget.destinationLocation;
     _seatPriceController.text = widget.seatPrice;
-    _seatAvailableController.text = widget.seatAvailable;
+    selectedSeats = int.parse(widget.seatAvailable);
     _modelController.text = widget.model;
     _matriculeController.text = widget.matricule;
+    status = widget.status;
   }
 
+  late String status;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +72,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
           GoogleMap(
             mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
-              target: LatLng(33.892166,  9.561555499999997),
+              target: LatLng(33.892166, 9.561555499999997),
               zoom: 5,
             ),
             onMapCreated: (controller) {
@@ -76,7 +80,6 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
             },
             onTap: _onMapTap,
             markers: _markers.toSet(),
-
           ),
           DraggableScrollableSheet(
             initialChildSize: 0.4,
@@ -106,9 +109,10 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: Color(0xFF009C77),
                               ),
-                            ),),
+                            ),
+                          ),
                           const SizedBox(height: 10),
                           Text(
                             "From *",
@@ -120,7 +124,8 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                           ),
                           TextFormField(
                             controller: _departureLocationController,
-                            decoration: InputDecoration(labelText: 'Departure Location',
+                            decoration: InputDecoration(
+                              labelText: 'Departure Location',
                               prefixIcon: Icon(
                                 Icons.location_on_outlined,
                                 color: Colors.black,
@@ -136,11 +141,10 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                               hintStyle: TextStyle(color: Colors.black38),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
-                              ),),
-
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 10),
-
                           Text(
                             "To *",
                             style: TextStyle(
@@ -150,8 +154,9 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                             ),
                           ),
                           TextFormField(
-                            controller:_destinationLocationController ,
-                            decoration: InputDecoration(labelText: 'Destination Location',
+                            controller: _destinationLocationController,
+                            decoration: InputDecoration(
+                              labelText: 'Destination Location',
                               prefixIcon: const Icon(
                                 Icons.location_on_outlined,
                                 color: Colors.black,
@@ -167,83 +172,143 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                               hintStyle: const TextStyle(color: Colors.black38),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
-                              ),),
-
+                              ),
+                            ),
                           ),
                           Center(
-                            child:Text(
+                            child: Text(
                               "Details",
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: Color(0xFF009C77),
                               ),
-
                             ),
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
                             controller: _departureDateTimeController,
-                            decoration: InputDecoration(labelText: 'Departure date & time',
+                            decoration: InputDecoration(
+                              labelText: 'Departure date & time',
                               prefixIcon: IconButton(
-                                icon: const Icon(Icons.calendar_today, color: Colors.black),
-                                onPressed: () =>
-                                    _selectDateTime(context),
+                                icon: const Icon(Icons.calendar_today,
+                                    color: Colors.black),
+                                onPressed: () => _selectDateTime(context),
                               ),
                               hintStyle: const TextStyle(color: Colors.black38),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0),
-                              ),),
-
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 10),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-
                               Expanded(
-                                child:  TextFormField(
+                                child: TextFormField(
                                   controller: _seatPriceController,
-                                  decoration: InputDecoration(labelText: 'Seat Price',
+                                  decoration: InputDecoration(
+                                    labelText: 'Seat Price',
                                     prefixIcon: const Icon(
                                       Icons.price_change,
                                       color: Colors.black,
                                     ),
-                                    hintStyle: const TextStyle(color: Colors.black38),
-
+                                    hintStyle:
+                                        const TextStyle(color: Colors.black38),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(5.0),
-                                    ),),
-
+                                    ),
+                                  ),
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 8),
                               Expanded(
-                                child:  TextFormField(
-                                  controller: _seatAvailableController,
-                                  decoration: InputDecoration(labelText: 'Seat Available',
+                                child: DropdownButtonFormField<int>(
+                                  value: selectedSeats,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      selectedSeats = newValue!;
+                                    });
+                                  },
+                                  items: [1, 2, 3, 4].map((int value) {
+                                    return DropdownMenuItem<int>(
+                                      value: value,
+                                      child: Text(value.toString()),
+                                    );
+                                  }).toList(),
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: ' Seat Available',
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Color(0xFF009C77)),
+                                    ),
+                                    floatingLabelStyle:
+                                        TextStyle(color: Color(0xFF009C77)),
                                     prefixIcon: Icon(
                                       Icons.airline_seat_recline_extra_rounded,
                                       color: Colors.black,
                                     ),
                                     hintStyle: TextStyle(color: Colors.black38),
-
-
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),),
-
+                                  ),
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return "  Seat available can\'t be empty!";
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ),
+
                             ],
                           ),
+                          DropdownButtonFormField<String>(
+                            value: status,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                status = newValue!;
+                              });
+                            },
+                            items: [
+                              'Disponible',
+                              'En cours',
+                              'Indisponible'
+                            ].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Status',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                BorderSide(color: Color(0xFF009C77)),
+                              ),
+                              floatingLabelStyle:
+                              TextStyle(color: Color(0xFF009C77)),
+                              prefixIcon: Icon(
+                                Icons.sticky_note_2_rounded,
+                                color: Colors.black,
+                              ),
+                              hintStyle: TextStyle(color: Colors.black38),
+                            ),
+                            validator: (String? value) {
+                              if (value == null || value.isEmpty) {
+                                return "Status can't be empty!";
+                              }
+                              return null;
+                            },
+                          ),
                           const SizedBox(height: 20),
-                          Center (
+                          Center(
                             child: ElevatedButton(
-                              onPressed:_updateOffer ,
+                              onPressed: _updateOffer,
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
                                   Color(0xFF009C77),
                                 ),
                                 shape: MaterialStateProperty.all<
@@ -275,7 +340,6 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
     );
   }
 
-
   Future<void> _updateOffer() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -293,7 +357,8 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
             'departureLocation': _departureLocationController.text,
             'destinationLocation': _destinationLocationController.text,
             'seatPrice': _seatPriceController.text,
-            'seatAvailable': _seatAvailableController.text,
+            'seatAvailable': selectedSeats.toString(),
+            'status': status,
             'model': _modelController.text,
             'matricule': _matriculeController.text,
           }),
@@ -321,7 +386,8 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
         _markers.add(
           Marker(
             markerId: MarkerId('departure'),
-            position: _getLocationFromAddress(_departureLocationController.text),
+            position:
+                _getLocationFromAddress(_departureLocationController.text),
             infoWindow: InfoWindow(title: 'Departure'),
           ),
         );
@@ -330,7 +396,8 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
         _markers.add(
           Marker(
             markerId: MarkerId('destination'),
-            position: _getLocationFromAddress(_destinationLocationController.text),
+            position:
+                _getLocationFromAddress(_destinationLocationController.text),
             infoWindow: InfoWindow(title: 'Destination'),
           ),
         );
@@ -339,22 +406,26 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
   }
 
   void _onMapTap(LatLng latLng) async {
-    List<Placemark> placemarks = await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
     Placemark placemark = placemarks.first;
-    String address = '${placemark.name}, ${placemark.street}, ${placemark.locality}, ${placemark.country}';
+    String address =
+        '${placemark.name}, ${placemark.street}, ${placemark.locality}, ${placemark.country}';
 
     if (_departureLocationController.text.isEmpty) {
       setState(() {
         _departureLocationController.text = address;
       });
 
-      _addMarker('departure', latLng, 'Departure'); // Ajouter un marqueur de départ
+      _addMarker(
+          'departure', latLng, 'Departure'); // Ajouter un marqueur de départ
     } else if (_destinationLocationController.text.isEmpty) {
       setState(() {
         _destinationLocationController.text = address;
       });
 
-      _addMarker('destination', latLng, 'Destination'); // Ajouter un marqueur de destination
+      _addMarker('destination', latLng,
+          'Destination'); // Ajouter un marqueur de destination
     } else {
       print('Both departure and destination are already set.');
     }
@@ -371,12 +442,10 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
       );
     });
   }
+
   LatLng _getLocationFromAddress(String address) {
-    return LatLng(33.892166,  9.561555499999997);
+    return LatLng(33.892166, 9.561555499999997);
   }
-
-
-
 
   void _showSuccessDialog() {
     AwesomeDialog(
@@ -390,7 +459,6 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
       },
       btnOkColor: Colors.green,
     ).show();
-
   }
 
   void _showErrorDialog() {

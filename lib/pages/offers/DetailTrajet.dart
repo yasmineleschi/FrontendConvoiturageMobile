@@ -3,6 +3,7 @@ import 'package:frontendcovoituragemobile/pages/Favorite.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class OfferDetailPage extends StatefulWidget {
   final dynamic offer;
@@ -17,6 +18,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   List<dynamic> comments = [];
   TextEditingController _commentController = TextEditingController();
   late String? loggedInUserId;
+  IO.Socket ?socket;
+
 
   @override
   void initState() {
@@ -24,11 +27,73 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
     fetchComments();
     getUserId().then((userId) {
       loggedInUserId = userId;
+
+      socket = IO.io('http://192.168.1.15:5000', <String, dynamic>{
+        'transports': ['websocket'],
+        'autoConnect': false,
+      });
+
+      socket!.connect();
+
+      socket!.onConnect((_) {
+        print('Connected');
+      });
+
+      socket!.on('new_reservation', (data) {
+        print('Reservation successful: $data');
+      });
+
+      socket!.on('reservation_error', (data) {
+        print('Reservation error: $data');
+        // Handle reservation errors here
+      });
     });
   }
 
+
+  static const String baseUrl = 'http://192.168.1.15:5000/api';
+void add(){
+  if (socket != null && socket!.connected) {
+    socket!.emit('addreservation', {
+      'userId': loggedInUserId,
+      'carId': widget.offer['_id'],
+    });
+  }
+}
+  Future<void> _sendReservation(String userId, String carId) async {
+    final String url = '$baseUrl/reservation/';
+    try {
+      final http.Response response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'userId': userId,
+          'carId': carId,
+        }),
+      );
+      if (response.statusCode == 201) {
+        print('Reservation sent successfully');
+        // Emit socket event to notify server about new reservation
+        if (socket != null && socket!.connected) {
+          socket!.emit('reservation', {
+            'userId': loggedInUserId,
+            'carId': widget.offer['_id'],
+          });
+        }
+      } else {
+        throw Exception('Failed to send reservation');
+      }
+    } catch (error) {
+      print('Error sending reservation: $error');
+      throw error;
+    }
+  }
+
   Future<void> fetchComments() async {
-    final response = await http.get(Uri.parse('http://192.168.1.15:5000/api/car/api/comments/${widget.offer['_id']}'));
+    final response =
+    await http.get(Uri.parse('http://192.168.1.15:5000/api/car/api/comments/${widget.offer['_id']}'));
     if (response.statusCode == 200) {
       setState(() {
         comments = json.decode(response.body);
@@ -70,7 +135,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   }
 
   Future<void> _deleteComment(String commentId) async {
-    final url = Uri.parse('http://localhost:5000/api/car/api/comments/$commentId');
+    final url = Uri.parse('http://192.168.1.15:5000/api/car/api/comments/$commentId');
     final response = await http.delete(url);
 
     if (response.statusCode == 200) {
@@ -111,14 +176,13 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF009C77),
-        title: const Text('Offer Detail',
+        title: Text(
+          'Offer Detail',
           style: TextStyle(
             fontStyle: FontStyle.italic,
             fontSize: 25,
@@ -138,13 +202,11 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
             elevation: 4.0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15.0),
-
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IconButton(
-
                   icon: Icon(
                     isFavorite ? Icons.favorite : Icons.favorite_border,
                     color: isFavorite ? Colors.red : null,
@@ -158,8 +220,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                 ),
                 Center(
                   child: SizedBox(
-                    width: 200.0, // Set your desired width
-                    height: 200.0, // Set your desired height
+                    width: 200.0,
+                    height: 200.0,
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
@@ -171,7 +233,6 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                     ),
                   ),
                 ),
-
                 Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Column(
@@ -232,13 +293,19 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                           ),
                         ],
                       ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          _sendReservation(loggedInUserId!, widget.offer['_id']);
+
+                        },
+                        child: Text('Réserver une voiture'),
+                      )
                     ],
                   ),
                 ),
               ],
             ),
           ),
-
           // Comments Section
           Expanded(
             child: ListView.builder(
@@ -254,18 +321,19 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(comment['content'] ?? ''),
-                  trailing: isCurrentUserComment ? IconButton(
+                  trailing: isCurrentUserComment
+                      ? IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
                       // Implement logic to delete the comment
                       _deleteComment(comment['_id']);
                     },
-                  ) : null,
+                  )
+                      : null,
                 );
               },
             ),
           ),
-
           // Comment Input Section
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -290,4 +358,11 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       ),
     );
   }
+  @override
+  void dispose() {
+    // Disconnect from the server when the page is closed
+    socket!.disconnect();
+    super.dispose();
+  }
+
 }

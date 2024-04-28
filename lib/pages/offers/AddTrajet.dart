@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
 
@@ -19,6 +18,7 @@ class AddTrajet extends StatefulWidget {
 class _AddTrajetState extends State<AddTrajet> {
   late GoogleMapController mapController;
   int selectedSeats = 1;
+  String status = "Disponible";
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _departureLocationController =
@@ -81,7 +81,7 @@ class _AddTrajetState extends State<AddTrajet> {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Color(0xFF009C77),
                           ),
                         ),),
                           const SizedBox(height: 10),
@@ -90,7 +90,7 @@ class _AddTrajetState extends State<AddTrajet> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Color(0xFF009C77),
                             ),
                           ),
                           DepartureLocationfield(),
@@ -101,7 +101,7 @@ class _AddTrajetState extends State<AddTrajet> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Color(0xFF009C77),
                             ),
                           ),
                           Destinationfield(),
@@ -112,7 +112,7 @@ class _AddTrajetState extends State<AddTrajet> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Color(0xFF009C77),
                             ),
 
                           ),
@@ -132,8 +132,11 @@ class _AddTrajetState extends State<AddTrajet> {
                               Expanded(
                                 child: SeatAvailablefield(),
                               ),
+
                             ],
                           ),
+                          const SizedBox(height: 10),
+                          widgetStatus(),
                           const SizedBox(height: 20),
                           Center (
                             child: ElevatedButton(
@@ -404,6 +407,45 @@ class _AddTrajetState extends State<AddTrajet> {
       ),
     );
   }
+  Widget widgetStatus() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: DropdownButtonFormField<String>(
+        value: status,
+        onChanged: (String? newValue) {
+          setState(() {
+            status = newValue!;
+          });
+        },
+        items: ['Disponible ', 'En cours', 'Indisponible'].map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Status',
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF009C77)),
+          ),
+          floatingLabelStyle: TextStyle(color: Color(0xFF009C77)),
+          prefixIcon: Icon(
+            Icons.sticky_note_2_rounded,
+            color: Colors.black,
+          ),
+          hintStyle: TextStyle(color: Colors.black38),
+        ),
+        validator: (String? value) {
+          if (value == null || value.isEmpty) {
+            return "Status can't be empty!";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
 
   Future<void> _selectDateTime(
       BuildContext context, TextEditingController controller) async {
@@ -462,6 +504,7 @@ class _AddTrajetState extends State<AddTrajet> {
       'departureDateTime': _departureDateTimeController.text,
       'seatPrice': _seatPriceController.text,
       'seatAvailable': selectedSeats.toString(),
+      'status': status,
     };
     print('Creating car with data: $carData');
     _showSuccessDialog();

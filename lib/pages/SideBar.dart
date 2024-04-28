@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontendcovoituragemobile/pages/Favorite.dart';
+import 'package:frontendcovoituragemobile/pages/ReservationList.dart';
+import 'package:frontendcovoituragemobile/pages/test.dart';
 import 'package:frontendcovoituragemobile/pages/offers/MyOffer.dart';
 import 'home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +21,7 @@ class _SideBarState extends State<SideBar> {
     return prefs.getString('userId');
   }
   late String? loggedInUserId;
+  late String? loggedInCarId;
   @override
   void initState() {
     super.initState();
@@ -114,6 +117,7 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
+
           ListTile(
             leading: Icon(Icons.favorite),
             title: const Text('My Favorite'),
@@ -121,6 +125,26 @@ class _SideBarState extends State<SideBar> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => FavoriteListPage(userId: loggedInUserId)),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title: const Text('reservation'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReservationList()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title: const Text('test'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReservationPage()),
               );
             },
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:frontendcovoituragemobile/pages/offers/AddTrajet.dart';
 import 'package:frontendcovoituragemobile/pages/offers/UpdaitOffre.dart';
 import 'package:frontendcovoituragemobile/pages/offers/DetailTrajet.dart';
@@ -44,6 +45,28 @@ class _MyOffersPageState extends State<MyOffersPage> {
           .showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
+  List<dynamic> processOffers(List<dynamic> _offers) {
+
+    _offers.sort((a, b) {
+      // Ordre de tri: 'Disponible' < 'En cours' < 'Indisponible'
+      if (a['status'] == 'Disponible') {
+        return -1;
+      } else if (b['status'] == 'Disponible') {
+        return 1;
+      } else if (a['status'] == 'En cours') {
+        return -1;
+      } else if (b['status'] == 'En cours') {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
+    // Retourner la liste triée
+    return _offers;
+  }
+
+
 
   Future<void> _getUserIDAndFetchOffers() async {
     try {
@@ -59,9 +82,16 @@ class _MyOffersPageState extends State<MyOffersPage> {
         },
       );
       if (response.statusCode == 200) {
+        // Récupérer les offres depuis la réponse
+        List<dynamic> fetchedOffers = json.decode(response.body);
+
+        // Trier les offres par statut
+        List<dynamic> sortedOffers = processOffers(fetchedOffers);
+
+        // Mettre à jour l'état avec les offres triées
         setState(() {
-          _offers = json.decode(response.body);
-          filteredOffers = List.from(_offers);
+          _offers = sortedOffers;
+          filteredOffers = List.from(sortedOffers);
         });
       } else {
         throw Exception('Failed to fetch offers');
@@ -70,6 +100,21 @@ class _MyOffersPageState extends State<MyOffersPage> {
       print('Error fetching offers: $e');
     }
   }
+
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Disponible':
+        return Colors.green;
+      case 'En cours':
+        return Colors.orange;
+      case 'Indisponible':
+        return Colors.red;
+      default:
+        return Colors.black;
+    }
+  }
+
 
   Future<Map<String, dynamic>> _fetchUserData(String userId) async {
     try {
@@ -211,6 +256,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
+
                                       ),
                                     ),
                                     Text(
@@ -272,12 +318,19 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                 ),
                               ],
                             ),
+                            Divider(),
                             SizedBox(height: 12),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
-
                               children: [
-                                Column(children: [
+                                Row(children: [
+
+                                  Image.asset(
+                                    'assets/images/depart.png',
+                                    width: 14,
+                                    height: 14,
+                                  ),
+                                  SizedBox(width: 8),
                                   Text(
                                     '${offer['departureLocation']}',
                                     style: TextStyle(
@@ -285,38 +338,54 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(
-                                    'From',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey
-                                    ),
-                                  ),
                                 ],),
 
                                 SizedBox(height: 10),
-                                Column(children: [
+                                Row(children: [
+                                  Image.asset(
+                                    'assets/images/destination.png',
+                                    width: 14,
+                                    height: 14,
+                                  ),
+                                  SizedBox(width: 8),
                                   Text(
                                     '${offer['destinationLocation']}',
 
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                        color: Colors.black
+                                        color: Colors.black,
                                     ),
                                   ),
-                                  Text(
-                                    'To',
-                                    style: TextStyle(
-                                      fontSize: 12, color: Colors.grey
-                                    ),
-                                  ),
+
                                 ],),
 
                               ],
                             ),
-                            SizedBox(height: 12),
 
+                            Divider(),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                              Text(
+                                'Status :',
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.black,      fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                                SizedBox(width: 8),
+                              Text(
+                                '${offer['status']}',
+                                style: TextStyle(
+                                    fontSize: 12,
+
+                                    color: _getStatusColor(offer['status']),
+                                ),
+                              ),
+
+                            ],),
+                            SizedBox(height: 12),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -334,6 +403,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                                           seatAvailable: offer['seatAvailable'].toString(),
                                           model: offer['model'].toString(),
                                           matricule: offer['matricule'].toString(),
+                                          status: offer['status'].toString(),
                                         ),
                                       ),
                                     );
