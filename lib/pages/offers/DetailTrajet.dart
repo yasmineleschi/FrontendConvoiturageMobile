@@ -28,7 +28,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   }
 
   Future<void> fetchComments() async {
-    final response = await http.get(Uri.parse('http://192.168.1.15:5000/api/car/api/comments/${widget.offer['_id']}'));
+    final response = await http.get(Uri.parse('http://localhost:5000/api/car/api/comments/${widget.offer['_id']}'));
     if (response.statusCode == 200) {
       setState(() {
         comments = json.decode(response.body);
@@ -50,7 +50,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
 
     if (userId != null) {
       final carId = widget.offer['_id'];
-      final url = Uri.parse('http://192.168.1.15:5000/api/car/api/comments/$carId');
+      final url = Uri.parse('http://localhost:5000/api/car/api/comments/$carId');
       final headers = <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       };
@@ -86,7 +86,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
 
   Future<void> addFavorite(String? userId, String carId) async {
     if (userId != null) {
-      final url = Uri.parse('http://192.168.1.15:5000/api/favorie/$userId/$carId');
+      final url = Uri.parse('http://localhost:5000/api/favorie/$userId/$carId');
       final headers = <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       };

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../home.dart';
+import 'package:frontendcovoituragemobile/pages/authentification/ForgotPasswordPage.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/signup_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -83,7 +84,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // Action to be performed when the "Forgot Password" button is pressed
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                      );
                     },
                     child: const Text(
                       'Forgot Password?',
@@ -209,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       try {
-        final url = Uri.parse('http://192.168.1.15:5000/api/users/login');
+        final url = Uri.parse('http://localhost:5000/api/users/login');
         final headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         };
