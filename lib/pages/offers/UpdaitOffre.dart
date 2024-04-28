@@ -453,7 +453,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
       dialogType: DialogType.success,
       animType: AnimType.bottomSlide,
       title: 'Success',
-      desc: 'Offer added successfully!',
+      desc: 'Offer updated successfully!',
       btnOkOnPress: () {
         Navigator.pop(context);
       },

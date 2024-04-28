@@ -35,9 +35,10 @@ class _FavoriteListPageState extends State<FavoriteListPage> {
       print('Failed to fetch favorites: ${response.statusCode}');
     }
   }
+
   Future<String?> fetchUser(String userId) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.15:5000/api/user/$userId'), // Assurez-vous que votre API prend en charge cette route pour récupérer les détails de l'utilisateur par son ID
+      Uri.parse('http://192.168.1.15:5000/api/user/$userId'),
     );
 
     if (response.statusCode == 200) {
@@ -47,9 +48,10 @@ class _FavoriteListPageState extends State<FavoriteListPage> {
       throw Exception('Failed to fetch user data');
     }
   }
+
   Future<void> removeFavorite(String favoriteId) async {
-    final response = await http
-        .delete(Uri.parse('http://192.168.1.15:5000/api/favorie/$favoriteId'));
+    final response = await http.delete(
+        Uri.parse('http://192.168.1.15:5000/api/favorie/$favoriteId'));
 
     if (response.statusCode == 200) {
       fetchFavorites();
@@ -66,7 +68,7 @@ class _FavoriteListPageState extends State<FavoriteListPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF009C77),
         title: const Text(
-          'My Favorite',
+          'My Favorites',
           style: TextStyle(
             fontStyle: FontStyle.italic,
             fontSize: 25,
@@ -76,41 +78,88 @@ class _FavoriteListPageState extends State<FavoriteListPage> {
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
+      body: favorites.isEmpty
+          ? Center(
+        child: Text(
+          'No favorites yet',
+          style: TextStyle(fontSize: 18),
+        ),
+      )
+          : GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 10.0,
+          crossAxisSpacing: 10.0,
+          childAspectRatio: 0.7,
+        ),
         itemCount: favorites.length,
         itemBuilder: (context, index) {
           final favorite = favorites[index];
-          final user = favorite['User']; // Récupérer l'utilisateur
-          return Card(
-            elevation: 4,
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: ListTile(
-              title: Text(
-                '${favorite['car']['departureLocation']} To ${favorite['car']['destinationLocation']}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+          final user = favorite['User'];
 
-              subtitle: Column(
-                children: [
-                  Text('Date & Time Departure: ${DateFormat('dd/MM/yyyy , HH:mm').format(DateTime.parse(favorite['car']['departureDateTime']))}',
+          return Card(
+            elevation: 3,
+            margin: const EdgeInsets.all(8),
+            child: InkWell(
+              onTap: () {
+                // Action when tapping on the favorite item
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xFFFFFFFF)],
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${favorite['car']['departureLocation']} ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            '${favorite['car']['destinationLocation']}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            'Date & Time Departure: ${DateFormat('dd/MM/yyyy ').format(DateTime.parse(favorite['car']['departureDateTime']))}',
+                          ),
+                          Text(
+                            ' ${DateFormat(' HH:mm').format(DateTime.parse(favorite['car']['departureDateTime']))}',
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  Text('Price: ${favorite['car']['seatPrice']} Dt/Seat',),
-                  Text('Seat Available: ${favorite['car']['seatAvailable']} ',),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      removeFavorite(favorite['_id']);
+                    },
+                  ),
                 ],
-              ),
-              trailing: IconButton(
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                ),
-                onPressed: () {
-                  removeFavorite(favorite['_id']);
-                },
               ),
             ),
           );
         },
       ),
+      backgroundColor: Colors.grey[200],
     );
   }
 }

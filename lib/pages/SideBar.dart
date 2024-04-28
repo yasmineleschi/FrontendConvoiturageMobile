@@ -129,7 +129,7 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.favorite),
+            leading: Icon(Icons.request_page_outlined),
             title: const Text('reservation'),
             onTap: () {
               Navigator.push(
@@ -138,16 +138,7 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
-          ListTile(
-            leading: Icon(Icons.favorite),
-            title: const Text('test'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ReservationPage()),
-              );
-            },
-          ),
+
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('Settings'),

@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfilPage(),
         '/addOffer': (context) => AddTrajet(),
         '/reservation': (context) => ReservationList(),
-        '/test': (context) => ReservationPage(),
+
 
       },
     );

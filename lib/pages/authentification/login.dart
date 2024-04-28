@@ -67,21 +67,9 @@ class _LoginPageState extends State<LoginPage> {
               _buildPasswordField(),
               const SizedBox(height: 10),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _rememberMe,
-                        onChanged: (value) {
-                          setState(() {
-                            _rememberMe = value!;
-                          });
-                        },
-                      ),
-                      const Text('Remember me !'),
-                    ],
-                  ),
+
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -213,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       try {
-        final url = Uri.parse('http://localhost:5000/api/users/login');
+        final url = Uri.parse('http://192.168.1.15:5000/api/users/login');
         final headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         };
