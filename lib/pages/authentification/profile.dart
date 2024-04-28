@@ -55,7 +55,7 @@ class _ProfilPageState extends State<ProfilPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
+        Uri.parse('http://localhost:5000/api/users/profile/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -115,7 +115,7 @@ class _ProfilPageState extends State<ProfilPage> {
 
       final request = http.MultipartRequest(
         'PUT',
-        Uri.parse('http://192.168.1.15:5000/api/users/update/$userId'),
+        Uri.parse('http://localhost:5000/api/users/update/$userId'),
       );
 
       request.headers['Authorization'] = 'Bearer $token';
@@ -294,7 +294,7 @@ class _ProfilPageState extends State<ProfilPage> {
           borderRadius: BorderRadius.circular(20),
           child: Image.network(
 
-            'http://192.168.1.15:5000/uploads/${_userData!['image']}',
+            'http://localhost:5000/uploads/${_userData!['image']}',
 
             width: 100,
             height: 100,
