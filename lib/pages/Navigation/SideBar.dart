@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontendcovoituragemobile/pages/Favorite.dart';
 import 'package:frontendcovoituragemobile/pages/Reservation/ReservationList.dart';
 import 'package:frontendcovoituragemobile/pages/offers/MyOffer.dart';
-import '../home.dart';
+import 'package:frontendcovoituragemobile/pages/Navigation/navigation_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -84,7 +84,7 @@ class _SideBarState extends State<SideBar> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  _username,
+                  '${_username ?? 'Unknown'}',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -93,9 +93,21 @@ class _SideBarState extends State<SideBar> {
               ],
             ),
           ),
-
           ListTile(
-            leading: Icon(Icons.list),
+            leading: Icon(Icons.home, color: Colors.deepOrangeAccent),
+            title: Text("Home"),
+            onTap: () {
+              Navigator.pop(context);
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NavigationBarScreen()),
+              );
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.list, color: Colors.deepOrangeAccent),
             title: Text('My Offers'),
             onTap: () {
               Navigator.pop(context);
@@ -106,9 +118,10 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
+          Divider(),
           ListTile(
-            leading: Icon(Icons.list),
-            title: Text('reservations'),
+            leading: Icon(Icons.request_page, color: Colors.deepOrangeAccent),
+            title: Text('Reservations'),
             onTap: () {
               Navigator.pop(context);
 
@@ -118,8 +131,9 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
+          Divider(),
           ListTile(
-            leading: Icon(Icons.favorite),
+            leading: Icon(Icons.favorite, color: Colors.deepOrangeAccent),
             title: const Text('My Favorite'),
             onTap: () {
               Navigator.push(
@@ -128,17 +142,18 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
-
+          Divider(),
 
           ListTile(
-            leading: Icon(Icons.settings),
+            leading: Icon(Icons.settings, color: Colors.deepOrangeAccent),
             title: Text('Settings'),
             onTap: () {
 
             },
           ),
+          Divider(),
           ListTile(
-            leading: Icon(Icons.info),
+            leading: Icon(Icons.info, color: Colors.deepOrangeAccent),
             title: Text('About Us'),
             onTap: () {
 

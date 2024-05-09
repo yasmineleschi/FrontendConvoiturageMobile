@@ -294,7 +294,7 @@ class _ProfilPageState extends State<ProfilPage> {
           borderRadius: BorderRadius.circular(20),
           child: Image.network(
 
-            'http://localhost:5000/uploads/${_userData!['image']}',
+            'http://192.168.1.15:5000/uploads/${_userData!['image']}',
 
             width: 100,
             height: 100,

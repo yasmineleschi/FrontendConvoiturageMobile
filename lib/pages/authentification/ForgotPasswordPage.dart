@@ -182,7 +182,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           ),
         );
       } else if (response.statusCode == 400) {
-        // Invalid email or reset code
+
         showDialog(
           context: context,
           builder: (_) => AlertDialog(

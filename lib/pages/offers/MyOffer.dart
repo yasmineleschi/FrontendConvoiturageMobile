@@ -183,7 +183,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
       ),
       drawer: SideBar(),
       body: Container(
-        color: Colors.grey[200], // Grey background for the entire body
+        color: Colors.grey[200],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -198,7 +198,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                   decoration: InputDecoration(
                     hintText: 'Enter destination...',
                     filled: true,
-                    fillColor: Colors.white, // White background for the search box
+                    fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),

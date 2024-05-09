@@ -173,7 +173,7 @@ class _HomePageState extends State<HomePage> {
 
     List<dynamic> filteredOffers = _offers.where((offer) => offer['status'] != 'Indisponible').toList();
 
-    // Trier les offres par statut
+
     filteredOffers.sort((a, b) {
       if (a['status'] == 'Disponible' && b['status'] != 'Disponible') {
         return -1;

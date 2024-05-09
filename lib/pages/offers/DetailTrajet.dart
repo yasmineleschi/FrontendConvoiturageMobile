@@ -22,7 +22,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
 
   late int initialSeatsAvailable;
 
-  int? remainingSeats;
+  late int? remainingSeats;
   void updateRemainingSeats() {
     setState(() {
       remainingSeats = initialSeatsAvailable - numberOfPassengers;
@@ -37,9 +37,9 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
     getUserId().then((userId) {
       loggedInUserId = userId;
 
-      initialSeatsAvailable = widget.offer['seatAvailable'];
+      initialSeatsAvailable = (widget.offer['seatAvailable'] as int);
 
-      remainingSeats = initialSeatsAvailable - numberOfPassengers;
+      updateRemainingSeats();
       contactController = TextEditingController();
       fetchOfferUserDetails(widget.offer['user']);
     });
@@ -113,6 +113,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   String? offerlastName;
   String? offerphone;
   String? offeradress;
+  String? _image;
   Future<void> addFavorite(String? userId, String carId) async {
     if (userId != null) {
       final url =
@@ -143,23 +144,32 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   }
 
   Future<void> fetchOfferUserDetails(String userId) async {
-    final url = Uri.parse('http://192.168.1.15:5000/api/users/$userId');
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
 
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final userData = json.decode(response.body);
-      setState(() {
-        offerUserId = userId;
-        offerUsername = userData['username'];
-        offerfirstname = userData['firstname'];
-        offerlastName = userData['lastname'];
-        offerphone = userData['phone'];
-        offeradress = userData['address'];
-      });
-    } else {
+      if (response.statusCode == 200) {
+        final userData = json.decode(response.body);
+        setState(() {
+          offerUserId = userId;
+          offerUsername = userData['username'];
+          offerfirstname = userData['firstname'];
+          offerlastName = userData['lastname'];
+          offerphone = userData['phone'];
+          offeradress = userData['address'];
+          _image = userData['image'];
+        });
+      } else {
+        // Handle error
+        print('Failed to fetch offer user details: ${response.statusCode}');
+      }
+    } catch (e) {
       // Handle error
-      print('Failed to fetch offer user details: ${response.statusCode}');
+      print('An error occurred while fetching offer user details: $e');
     }
   }
 
@@ -186,7 +196,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30.0),
@@ -213,20 +223,26 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
           ),
           Column(
             children: [
+              const SizedBox(
+                height: 10,
+              ),
               Center(
                 child: SizedBox(
                   width: 200.0,
                   height: 200.0,
                   child: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(15.0)),
                       image: DecorationImage(
-                        image: AssetImage(
-                            'assets/images/car.png'),
+                        image: NetworkImage(
+                          'http://192.168.1.15:5000/uploads/$_image',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
+                    width: 100,
+                    height: 100,
                   ),
                 ),
               ),
@@ -304,39 +320,40 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                         ],
                       ),
                       if (_showDetails)
-                        Positioned(
-                          child: Container(
-                            padding: EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Driver Details ',
-                                  style: TextStyle(
+                        Container(
+                          padding: EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Driver Details',
+                                style: TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 8.0),
-                                Text(
-                                  'First Name: ',
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                                Text(
-                                  'Last Name: Doe',
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                                Text(
-                                  'Phone: 123456789',
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                                // Add other user details as needed
-                              ],
-                            ),
+                                    color: Colors.orangeAccent),
+                              ),
+                              const SizedBox(height: 8.0),
+                              Text(
+                                'First Name: ${offerfirstname ?? ''}',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                              Text(
+                                'Last Name: ${offerlastName ?? ''}',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                              Text(
+                                'Phone: ${offerphone ?? ''}',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                              Text(
+                                'Address: ${offeradress ?? ''}',
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ],
                           ),
                         ),
                       const SizedBox(
@@ -347,7 +364,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.my_location, color: Colors.orangeAccent),
+                              const Icon(Icons.my_location,
+                                  color: Colors.orangeAccent),
                               const SizedBox(width: 8),
                               Text(
                                 '${widget.offer['departureLocation']} ',
@@ -362,7 +380,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              const Icon(Icons.location_on_sharp, color: Colors.orangeAccent),
+                              const Icon(Icons.location_on_sharp,
+                                  color: Colors.orangeAccent),
                               const SizedBox(width: 8),
                               Text(
                                 '${widget.offer['destinationLocation']}',
@@ -385,20 +404,23 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                               children: [
                                 const Row(
                                   children: [
-                                  Icon(Icons.date_range, color: Colors.orangeAccent),
+                                    Icon(Icons.date_range,
+                                        color: Colors.orangeAccent),
                                     SizedBox(width: 8.0),
-                                  Text('Start Date',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                    Text(
+                                      'Start Date',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
-                                  ),
-                                ],),
-
+                                  ],
+                                ),
                                 Text(
-                                  DateFormat('EEEE, d MMMM y').format(DateTime.parse(
-                                      widget.offer['departureDateTime'])),
+                                  DateFormat('EEEE, d MMMM y').format(
+                                      DateTime.parse(
+                                          widget.offer['departureDateTime'])),
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.black87,
@@ -414,19 +436,23 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                                 const Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Icon(Icons.access_time_outlined, color: Colors.orangeAccent),
+                                    Icon(Icons.access_time_outlined,
+                                        color: Colors.orangeAccent),
                                     SizedBox(width: 8.0),
-                                    Text('Start Time',
+                                    Text(
+                                      'Start Time',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
                                       ),
                                     ),
-                                  ],),
+                                  ],
+                                ),
                                 Text(
                                   DateFormat('HH:mm').format(DateTime.parse(
-                                      widget.offer['departureDateTime'])) + ' PM',
+                                          widget.offer['departureDateTime'])) +
+                                      ' PM',
                                   style: const TextStyle(
                                     fontSize: 14.0,
                                     color: Colors.black87,
@@ -441,18 +467,20 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                       Row(
                         children: [
                           Expanded(
-                            child:Column(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.event_seat, color: Colors.orangeAccent),
+                                    Icon(Icons.event_seat,
+                                        color: Colors.orangeAccent),
                                     SizedBox(width: 8.0),
                                     Text(
                                       'Seats Available',
                                       style: TextStyle(
                                         fontSize: 16.0,
-                                        color: Colors.black, fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
@@ -474,13 +502,15 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Icon(Icons.price_change_outlined, color: Colors.orangeAccent),
+                                    Icon(Icons.price_change_outlined,
+                                        color: Colors.orangeAccent),
                                     SizedBox(width: 8.0),
                                     Text(
                                       'Seats Price',
                                       style: TextStyle(
                                         fontSize: 16.0,
-                                        color: Colors.black,fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
@@ -501,10 +531,6 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                   ),
                 ),
               ),
-
-
-
-
             ],
           ),
           Positioned(
@@ -523,7 +549,6 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
               child: const Icon(Icons.comment, color: Colors.black),
             ),
           ),
-
           Positioned(
             bottom: 15,
             right: 20,
@@ -538,17 +563,16 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                child: Text('Make Reservation', style: TextStyle(color: Colors.white)), // Texte en blanc
+                child: Text('Make Reservation',
+                    style: TextStyle(color: Colors.white)), // Texte en blanc
               ),
             ),
           ),
-
-
-
         ],
       ),
     );
   }
+
   void _showCommentsBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -558,7 +582,6 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
             return Container(
               constraints: BoxConstraints(maxHeight: 400),
               child: SingleChildScrollView(
-
                 child: Container(
                   padding: EdgeInsets.all(10.0),
                   child: Column(
@@ -577,9 +600,9 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                         itemCount: comments.length,
                         itemBuilder: (context, index) {
                           final comment = comments[index];
-                          final String userId =
-                          comment['user']['_id'];
-                          final bool isCurrentUserComment = userId == loggedInUserId;
+                          final String userId = comment['user']['_id'];
+                          final bool isCurrentUserComment =
+                              userId == loggedInUserId;
 
                           return ListTile(
                             title: Text(
@@ -589,12 +612,11 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                             subtitle: Text(comment['content'] ?? ''),
                             trailing: isCurrentUserComment
                                 ? IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: () {
-
-                                _deleteComment(comment['_id']);
-                              },
-                            )
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () {
+                                      _deleteComment(comment['_id']);
+                                    },
+                                  )
                                 : null,
                           );
                         },
@@ -607,26 +629,31 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                             Expanded(
                               child: TextField(
                                 controller: _commentController,
-
                                 decoration: InputDecoration(
                                   labelText: 'Add a comment',
-                                  floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
+                                  floatingLabelStyle:
+                                      const TextStyle(color: Color(0xFF009C77)),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                     borderSide: BorderSide(color: Colors.grey),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(color:Color(0xFF009C77) ),
+                                    borderSide:
+                                        BorderSide(color: Color(0xFF009C77)),
                                   ),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 12.0, horizontal: 16.0),
                                   hintText: 'Enter your comment here',
                                   hintStyle: TextStyle(color: Colors.grey),
                                 ),
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.send , color:Colors.black ,),
+                              icon: Icon(
+                                Icons.send,
+                                color: Colors.black,
+                              ),
                               onPressed: () {
                                 _sendComment();
                               },
@@ -644,12 +671,13 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       },
     );
   }
+
   bool _showDetails = false;
   final _formKey = GlobalKey<FormState>();
 
-  late double totalPrice = (widget.offer['seatPrice'] as double);
-  String paymentMethod = "Cash";
-  int numberOfPassengers = 1;
+  late int totalPrice = (widget.offer['seatPrice'] as int);
+  late String paymentMethod = "Cash";
+  late int numberOfPassengers = 1;
 
   late TextEditingController contactController;
 
@@ -660,8 +688,10 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   }
 
   void _calculateTotalPrice() {
-    totalPrice = numberOfPassengers * (widget.offer['seatPrice'] as double);
+    totalPrice = numberOfPassengers * (widget.offer['seatPrice'] as int);
   }
+
+  final TextEditingController ContactController = TextEditingController();
 
   Future<void> _addReservation() async {
     final prefs = await SharedPreferences.getInstance();
@@ -693,192 +723,206 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       );
 
       if (response.statusCode == 201) {
-        print('Reservation added successfully');
+
       } else {
         final errorResponse = json.decode(response.body);
-        print('Error creating reservation: ${errorResponse['message']}');
+
       }
     } catch (e) {
-      print('An unexpected error occurred: $e');
+      setState(() {
+
+      });
     }
   }
 
-
-
-  final TextEditingController ContactController = TextEditingController();
+  late String reservationStatus = 'Pending';
+  bool _showForm = true;
   void _showAddReservationDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.white,
-            title:
-              const Text(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              backgroundColor: Colors.white,
+              title: const Text(
                 'Make Reservation',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
-                  color:  Colors.black,
+                  color: Colors.black,
                 ),
               ),
-
-
-            content: SingleChildScrollView(
-
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  TextFormField(
-                    controller: contactController,
-
-                    decoration: const InputDecoration(
-                      labelText: 'Contact Info',
-                      border: OutlineInputBorder(),
-                      prefixIcon: const Icon(
-                        Icons.phone,
-                        color: Colors.orangeAccent ,
-                      ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFF009C77)),
-                      ),
-                      floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
-                    ),
-
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter contact info';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            if (numberOfPassengers >
-                                initialSeatsAvailable) {
-                              numberOfPassengers--;
-                              _calculateTotalPrice();
-                            }
-                          });
-                        },
-                        child: Icon(Icons.remove ,color: Color(0xFF009C77)),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        '$numberOfPassengers',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            if (numberOfPassengers <
-                                initialSeatsAvailable) {
-                              numberOfPassengers++;
-                              _calculateTotalPrice();
-                            }
-                          });
-                        },
-                        child: Icon(Icons.add,color: Color(0xFF009C77)),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Text(
-                        'Total Price:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+              content: SingleChildScrollView(
+                child: _showForm
+                    ? Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      TextFormField(
+                        controller: contactController,
+                        decoration: const InputDecoration(
+                          labelText: 'Contact Info',
+                          border: OutlineInputBorder(),
+                          prefixIcon: const Icon(
+                            Icons.phone,
+                            color: Colors.orangeAccent,
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF009C77)),
+                          ),
+                          floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
                         ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter contact info';
+                          }
+                          return null;
+                        },
                       ),
-                      SizedBox(width: 8),
-                      Text(
-                        '$totalPrice',
-                        style: TextStyle(fontSize: 16),
+                      SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                if (numberOfPassengers > 4) {
+                                  numberOfPassengers--;
+                                  _calculateTotalPrice();
+                                }
+                              });
+                            },
+                            child: Icon(Icons.remove, color: Color(0xFF009C77)),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            '$numberOfPassengers',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                if (numberOfPassengers < 1) {
+                                  numberOfPassengers++;
+                                  _calculateTotalPrice();
+                                }
+                              });
+                            },
+                            child: Icon(Icons.add, color: Color(0xFF009C77)),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          const Text(
+                            'Total Price:',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            '$totalPrice',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: paymentMethod,
+                        decoration: InputDecoration(
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF009C77)),
+                          ),
+                          floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
+                          labelText: 'Payment Method',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: ['Credit Card', 'D17', 'Cash'].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            paymentMethod = newValue!;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select payment method';
+                          }
+                          return null;
+                        },
                       ),
                     ],
                   ),
-
-
-                  SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    value: paymentMethod,
-                    decoration: InputDecoration(
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFF009C77)),
+                )
+                    : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      'Status:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      floatingLabelStyle: const TextStyle(color: Color(0xFF009C77)),
-                      labelText: 'Payment Method',
-                      border: OutlineInputBorder(),
                     ),
-                    items: ['Credit Card', 'D17', 'Cash'].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        paymentMethod = newValue!;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select payment method';
-                      }
-                      return null;
-                    },
+                    SizedBox(height: 8),
+                    Text(
+                      '$reservationStatus',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.black),
                   ),
-                ],
-              ),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.black),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.orangeAccent),
-              ),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  _addReservation();
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text(
-                'Make Now',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.orangeAccent),
+                  ),
+                  onPressed:  () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      _addReservation();
+                      setState(() {
+                        _showForm = false;
+                      });
+                    }
+                  },
+
+                  child: Text(
+                    'Make Now',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
-      );
-        },
     );
   }
 
