@@ -675,7 +675,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
     var url = Uri.parse('http://192.168.1.15:5000/api/reservations/');
     Map<String, dynamic> data = {
       'userId': offerUserId,
-      'passengerid':userId,
+      'passengerid': userId,
       'carId': widget.offer['_id'],
       'numberOfPassengers': numberOfPassengers.toString(),
       'totalPrice': totalPrice.toString(),
@@ -692,21 +692,17 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
+        print('Reservation added successfully');
       } else {
         final errorResponse = json.decode(response.body);
-        print('Error creating car: ${errorResponse['message']}');
-
+        print('Error creating reservation: ${errorResponse['message']}');
       }
     } catch (e) {
-
       print('An unexpected error occurred: $e');
-
     }
-
-
-
   }
+
 
 
   final TextEditingController ContactController = TextEditingController();

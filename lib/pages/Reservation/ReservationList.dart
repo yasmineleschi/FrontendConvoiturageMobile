@@ -3,6 +3,9 @@ import 'package:frontendcovoituragemobile/Model/Reservation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class ReservationListScreen extends StatefulWidget {
   @override
   _ReservationListScreenState createState() => _ReservationListScreenState();
@@ -18,7 +21,14 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   }
 
   Future<List<Reservation>> fetchReservations() async {
-    final response = await http.get(Uri.parse('http://localhost:5000/api/reservations/'));
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+
+    if (userId == null) {
+      throw Exception('User ID not found');
+    }
+
+    final response = await http.get(Uri.parse('http://192.168.1.15:5000/api/reservations/$userId'));
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map((data) => Reservation.fromJson(data)).toList();
@@ -26,6 +36,8 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       throw Exception('Failed to fetch reservations');
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -77,26 +89,85 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    'Contact info',
+                                    style: TextStyle(color: Colors.black54),
+                                  ),
+                                  Text(
+                                    '${reservation.contactInfo}',
+                                    style: TextStyle(color: Colors.black54),
+                                  ),
+                                ],),
+
+                            ],),
                         Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Total Price: ${reservation.contactInfo}',
-                            style: TextStyle(color: Colors.black54),
+                          Column(
+                            children: [
+                              Text(
+                                'Total Price:',
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                              Text(
+                                '${reservation.totalPrice}',
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                          ],),
+                          Column(
+                            children: [
+                              Text(
+                                'Num of passengers',
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                              Text(
+                                '${reservation.numberOfPassengers}',
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                            ],),
+                          Column(
+                            children: [
+                              Text(
+                                DateFormat('HH:mm').format(DateTime.parse(reservation.reservationDateTime as String)),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Text(
+                                DateFormat('dd/MM/yyyy').format(DateTime.parse(reservation.reservationDateTime as String)),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const Text(
+                                "Date of request",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'Total Price: ${reservation.paymentMethod}',
-                            style: TextStyle(color: Colors.black54),
-                          ),
+                          Column(
+                            children: [
+                              Text(
+                                'Method Payement',
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                              Text(
+                                '${reservation.paymentMethod}',
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                            ],),
                         ],),
-                          Text(
-                            'Total Price: ${reservation.totalPrice}',
-                            style: TextStyle(color: Colors.black54),
-                          ),
-                          Text(
-                            'Number of Passengers: ${reservation.numberOfPassengers}',
-                            style: TextStyle(color: Colors.black54),
-                          ),
                         ],
                       ),
                       trailing: Row(
@@ -104,14 +175,14 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              // Logique pour confirmer la réservation
+
                             },
                             child: Text('Confirm'),
                           ),
                           SizedBox(width: 8),
                           ElevatedButton(
                             onPressed: () {
-                              // Logique pour annuler la réservation
+
                             },
                             child: Text('Cancel'),
                           ),
