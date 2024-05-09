@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontendcovoituragemobile/pages/Favorite.dart';
-import 'package:frontendcovoituragemobile/pages/ReservationList.dart';
-import 'package:frontendcovoituragemobile/pages/test.dart';
+import 'package:frontendcovoituragemobile/pages/Reservation/ReservationList.dart';
 import 'package:frontendcovoituragemobile/pages/offers/MyOffer.dart';
-import 'home.dart';
+import '../home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -94,17 +93,7 @@ class _SideBarState extends State<SideBar> {
               ],
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home Page'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()),
-              );
 
-            },
-          ),
           ListTile(
             leading: Icon(Icons.list),
             title: Text('My Offers'),
@@ -117,7 +106,18 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
+          ListTile(
+            leading: Icon(Icons.list),
+            title: Text('reservations'),
+            onTap: () {
+              Navigator.pop(context);
 
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReservationListScreen()),
+              );
+            },
+          ),
           ListTile(
             leading: Icon(Icons.favorite),
             title: const Text('My Favorite'),
@@ -128,16 +128,7 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
-          ListTile(
-            leading: Icon(Icons.request_page_outlined),
-            title: const Text('reservation'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ReservationList()),
-              );
-            },
-          ),
+
 
           ListTile(
             leading: Icon(Icons.settings),

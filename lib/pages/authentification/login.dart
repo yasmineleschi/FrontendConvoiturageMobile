@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/pages/Navigation/navigation_bar.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -236,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => NavigationBarScreen()),
           );
         } else {
           final errorMessage = json.decode(response.body)['error'];

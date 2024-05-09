@@ -5,7 +5,7 @@ import 'package:frontendcovoituragemobile/pages/offers/UpdaitOffre.dart';
 import 'package:frontendcovoituragemobile/pages/offers/DetailTrajet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../SideBar.dart';
+import '../Navigation/SideBar.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +26,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
   }
 
   Future<void> deleteCar(String carId) async {
-    final url = 'http://localhost:5000/api/car/$carId';
+    final url = 'http://192.168.1.15:5000/api/car/$carId';
     try {
       final response = await http.delete(Uri.parse(url));
 

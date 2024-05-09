@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/pages/Navigation/SideBar.dart';
 import 'authentification/profile.dart';
-import 'sidebar.dart';
+
 import 'package:intl/intl.dart';
 import 'offers/DetailTrajet.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'offers/AddTrajet.dart';
 
 
@@ -85,22 +85,6 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       print('Error fetching offers: $e');
       // Handle error here (e.g., show Snackbar or AlertDialog)
-    }
-  }
-
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null) {
-      setState(() {
-        _selectedDate = picked.toString();
-        _dateController.text = _selectedDate!;
-      });
     }
   }
 
@@ -225,17 +209,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
-          IconButton(
-            icon: CircleAvatar(
-              backgroundImage: AssetImage('assets/images/car.png'),
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilPage()),
-              );
-            },
-          ),
+
         ],
       ),
 
