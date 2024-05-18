@@ -154,7 +154,7 @@ class _FavoriteListPageState extends State<FavoriteListPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  OfferDetailPage(offer: favorite),
+                                   OfferDetailPage(offer: favorite['car']),
                             ),
                           );
                         },
@@ -243,36 +243,7 @@ class _FavoriteListPageState extends State<FavoriteListPage> {
                                   },
                                 ),
                               ),
-                              Positioned(
-                                bottom:
-                                    MediaQuery.of(context).size.height * 0.07,
-                                left: MediaQuery.of(context).size.width * 0.03,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Icon(Icons.calendar_today,
-                                        size: 14, color: Colors.orange),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      DateFormat('dd/MM/yyyy').format(
-                                          DateTime.parse(favorite['car']
-                                              ['departureDateTime'])),
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    const Icon(Icons.access_time,
-                                        size: 14, color: Colors.orange),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      DateFormat('HH:mm').format(DateTime.parse(
-                                          favorite['car']
-                                              ['departureDateTime'])),
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                              ),
+
                               Positioned(
                                 bottom:
                                     MediaQuery.of(context).size.height * 0.03,

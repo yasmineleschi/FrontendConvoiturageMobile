@@ -74,8 +74,8 @@ class _AddTrajetState extends State<AddTrajet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          const SizedBox(height: 10),
-                      Center(
+                          const SizedBox(height: 8),
+                        Center(
                         child: Text(
                           "Add New Offer",
                           style: TextStyle(
@@ -90,22 +90,21 @@ class _AddTrajetState extends State<AddTrajet> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF009C77),
+                              color: Colors.black,
                             ),
                           ),
                           DepartureLocationfield(),
                           const SizedBox(height: 10),
-
                           Text(
                             "To *",
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF009C77),
+                              color: Colors.black,
                             ),
                           ),
                           Destinationfield(),
-
+                          const SizedBox(height: 10),
                           Center(
                             child:Text(
                             "Details",
@@ -120,7 +119,6 @@ class _AddTrajetState extends State<AddTrajet> {
                           const SizedBox(height: 10),
                           departureDateTimeField(context),
                           const SizedBox(height: 10),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -136,7 +134,45 @@ class _AddTrajetState extends State<AddTrajet> {
                             ],
                           ),
                           const SizedBox(height: 10),
-                          widgetStatus(),
+                          DropdownButtonFormField<String>(
+                            value: status,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                status = newValue!;
+                              });
+                            },
+                            items: [
+                              'Disponible',
+                              'En cours',
+                              'Indisponible'
+                            ].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Status',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                BorderSide(color: Color(0xFF009C77)),
+                              ),
+                              floatingLabelStyle:
+                              TextStyle(color: Color(0xFF009C77)),
+                              prefixIcon: Icon(
+                                Icons.sticky_note_2_rounded,
+                                color: Colors.black,
+                              ),
+                              hintStyle: TextStyle(color: Colors.black38),
+                            ),
+                            validator: (String? value) {
+                              if (value == null || value.isEmpty) {
+                                return "Status can't be empty!";
+                              }
+                              return null;
+                            },
+                          ),
                           const SizedBox(height: 20),
                           Center (
                             child: ElevatedButton(

@@ -14,6 +14,7 @@ class SideBar extends StatefulWidget {
 
 class _SideBarState extends State<SideBar> {
   late String _username = '';
+  late String _etat = '';
   late String _userId = '';
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
@@ -51,7 +52,8 @@ class _SideBarState extends State<SideBar> {
         final userData = json.decode(response.body);
         setState(() {
           _username = userData['username'];
-          _userId = userData['_id'];
+          _userId = userId;
+          _etat = userData['etat'];
         });
       } else {
         print('Failed to load user data. Status code: ${response.statusCode}');
@@ -72,24 +74,36 @@ class _SideBarState extends State<SideBar> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.white, Color(0xFF009C77)],
+                colors: [Color(0xFFBEEEE2), Colors.white],
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
                   radius: 30,
                   backgroundImage: AssetImage('assets/images/car.png'),
                 ),
-                SizedBox(height: 10),
-                Text(
-                  '${_username ?? 'Unknown'}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
+                Column(
+
+                  children: [
+                    Text(
+                      '${_username ?? 'Unknown'}',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      '${_etat ?? ''}',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                )
+
               ],
             ),
           ),

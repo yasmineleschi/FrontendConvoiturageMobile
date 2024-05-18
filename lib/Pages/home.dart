@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/Pages/authentification/login.dart';
 import 'package:frontendcovoituragemobile/pages/Navigation/SideBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'authentification/profile.dart';
 
 import 'package:intl/intl.dart';
@@ -190,7 +192,18 @@ class _HomePageState extends State<HomePage> {
 
     return filteredOffers;
   }
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Clear user session data
+    prefs.remove('token');
+    prefs.remove('userId');
 
+    // Navigate back to the login screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     List<dynamic> filteredOffers = _applyFilters();
@@ -209,7 +222,10 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
-
+          IconButton(
+            icon: Icon(Icons.logout ,color: Colors.white,),
+            onPressed: _logout,
+          ),
         ],
       ),
 
@@ -355,7 +371,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
 
-                    child: Container(
+                    child:Container(
                       margin: EdgeInsets.all(10),
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -363,8 +379,7 @@ class _HomePageState extends State<HomePage> {
                         gradient: const LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [ Color(0xFFFFFFFF)],
-
+                          colors: [Color(0xFFFFFFFF), Color(0xFFEBEBEB)],
                         ),
                       ),
                       child: Column(

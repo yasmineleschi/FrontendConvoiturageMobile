@@ -22,13 +22,13 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   List<dynamic> comments = [];
   TextEditingController _commentController = TextEditingController();
   late String? loggedInUserId;
-  late int initialSeatsAvailable;
+  late int initialSeatsAvailable = (widget.offer['seatAvailable'] as int);
   late int? remainingSeats;
   bool isFavorite = false;
   late String? offerUserId;
   String? offerUsername;
   String? offerAge;
-  String? offerlastName;
+  String? offeremail;
   String? offerphone;
   String? offeradress;
   String? _image;
@@ -39,7 +39,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
 
   void updateRemainingSeats() {
     setState(() {
-      remainingSeats = initialSeatsAvailable - numberOfPassengers;
+      remainingSeats = (initialSeatsAvailable - numberOfPassengers) as int;
     });
   }
 
@@ -65,6 +65,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       fetchOfferUserDetails(widget.offer['user']);
     });
   }
+
   @override
   void dispose() {
     contactController.dispose();
@@ -75,28 +76,52 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('userId');
   }
+
   Future<void> _sendComment() async {
     final commentContent = _commentController.text;
     final userId = loggedInUserId;
     if (userId != null) {
-      await CommentService.addComment(userId, widget.offer.id, commentContent);
-      fetchComments();
-      _commentController.clear();
+      try {
+        await CommentService.addComment(userId, widget.offer.id, commentContent);
+        fetchComments();
+        _commentController.clear();
+      } catch (e) {
+        print('Erreur lors de l\'ajout du commentaire: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de l\'ajout du commentaire: $e'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     } else {
+      print('Aucun utilisateur connecté');
+
     }
   }
-  Future<void> fetchComments() async {
+
+
+
+  Future<List> fetchComments() async {
     final response = await CommentService.fetchComments(widget.offer['_id']);
     setState(() {
       comments = response;
     });
+    return response;
   }
+
   Future<void> _deleteComment(String commentId) async {
-    await CommentService.deleteComment(commentId);
-    setState(() {
-      comments.removeWhere((comment) => comment['_id'] == commentId );;
-    });
+    try {
+      await CommentService.deleteComment(commentId);
+      setState(() {
+        comments.removeWhere((comment) => comment['_id'] == commentId);
+      });
+    } catch (e) {
+      print('Failed to delete comment: $e');
+    }
   }
+
+
   Future<void> addFavorite(String? userId, String carId) async {
     if (userId != null) {
       try {
@@ -117,14 +142,15 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       print('User ID not found');
     }
   }
+
   Future<void> fetchOfferUserDetails(String userId) async {
     try {
       final userDetails = await UserService.fetchUserDetails(userId);
       setState(() {
         offerUserId = userId;
         offerUsername = userDetails['username'];
+        offeremail = userDetails['email'];
         offerAge = userDetails['age'];
-        offerlastName = userDetails['lastname'];
         offerphone = userDetails['phone'];
         offeradress = userDetails['address'];
         _image = userDetails['image'];
@@ -133,6 +159,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       print('Failed to fetch offer user details: $e');
     }
   }
+
   Future<void> _addReservation() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('userId');
@@ -203,297 +230,315 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
             ),
           ),
           SingleChildScrollView(
-          child:Column(
-            children: [
-              const SizedBox(height: 10),
-              Center(
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.2,
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          'http://192.168.1.14:5000/uploads/$_image',
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(15.0)),
+                        image: DecorationImage(
+                          image: NetworkImage(
+                            'http://192.168.1.14:5000/uploads/$_image',
+                          ),
+                          fit: BoxFit.cover,
                         ),
-                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                margin: const EdgeInsets.all(15.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.person, color: Colors.orangeAccent),
-                          const SizedBox(width: 8.0),
-                          const Text(
-                            'Offered by:',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 8.0),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _showDetails = !_showDetails;
-                              });
-                            },
-                            child: Text(
-                              '${offerUsername ?? 'Unknown'}',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                          // Show user details when _showDetails is true
-                          const Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.star, color: Colors.yellow),
-                                    SizedBox(width: 5.0),
-                                    Text(
-                                      '4.5',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (_showDetails)
-                        Container(
-                          padding: const EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Driver Details',
-                                style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.orangeAccent),
-                              ),
-                              const SizedBox(height: 8.0),
-
-                              Text(
-                                'Phone: ${offerphone ?? ''}',
-                                style: const TextStyle(fontSize: 16.0),
-                              ),
-                              Text(
-                                'Address: ${offeradress ?? ''}',
-                                style: const TextStyle(fontSize: 16.0),
-                              ),
-                              Text(
-                                'Age: ${offerphone ?? ''}',
-                                style: const TextStyle(fontSize: 16.0),
-                              ),
-                            ],
-                          ),
-                        ),
-                      const SizedBox(height: 10),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.my_location, color: Colors.orangeAccent),
-                              const SizedBox(width: 8),
-                              Text(
-                                '${widget.offer['departureLocation']} ',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on_sharp, color: Colors.orangeAccent),
-                              const SizedBox(width: 8),
-                              Text(
-                                '${widget.offer['destinationLocation']}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10.0),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Row(
-                                  children: [
-                                    Icon(Icons.date_range, color: Colors.orangeAccent),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      'Start Date',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  DateFormat('EEEE, d MMMM y').format(
-                                      DateTime.parse(widget.offer['departureDateTime'])),
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(Icons.access_time_outlined, color: Colors.orangeAccent),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      'Start Time',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  '${DateFormat('HH:mm').format(DateTime.parse(widget.offer['departureDateTime']))} PM',
-                                  style: const TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10.0),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Row(
-                                  children: [
-                                    Icon(Icons.event_seat, color: Colors.orangeAccent),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      'Seats Available',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  ' $remainingSeats',
-                                  style: const TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(Icons.price_change_outlined, color: Colors.orangeAccent),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      'Seats Price',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  ' ${widget.offer['seatPrice']}  /Seat',
-                                  style: const TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                const SizedBox(height: 10),
+                Container(
+                  margin: const EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.person,
+                                color: Colors.orangeAccent),
+                            const SizedBox(width: 8.0),
+                            const Text(
+                              'Offered by:',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8.0),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _showDetails = !_showDetails;
+                                });
+                              },
+                              child: Text(
+                                '${offerUsername ?? 'Unknown'}',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            const Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.star, color: Colors.yellow),
+                                      SizedBox(width: 5.0),
+                                      Text(
+                                        '4.5',
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_showDetails)
+                          Container(
+                            padding: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Driver Details',
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.orangeAccent),
+                                ),
+                                const SizedBox(height: 8.0),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Phone: ${offerphone ?? ''}',
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      'Age: ${offerAge ?? ''}',
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  'Address: ${offeradress ?? ''}',
+                                  style: const TextStyle(fontSize: 16.0),
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  'E-mail: ${offeremail ?? ''}',
+                                  style: const TextStyle(fontSize: 16.0),
+                                ),
+                              ],
+                            ),
+                          ),
+                        const SizedBox(height: 10),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.my_location,
+                                    color: Colors.orangeAccent),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${widget.offer['departureLocation']} ',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on_sharp,
+                                    color: Colors.orangeAccent),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${widget.offer['destinationLocation']}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    children: [
+                                      Icon(Icons.date_range,
+                                          color: Colors.orangeAccent),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Start Date',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    DateFormat('EEEE, d MMMM y').format(
+                                        DateTime.parse(
+                                            widget.offer['departureDateTime'])),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(Icons.access_time_outlined,
+                                          color: Colors.orangeAccent),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Start Time',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    '${DateFormat('HH:mm').format(DateTime.parse(widget.offer['departureDateTime']))} PM',
+                                    style: const TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    children: [
+                                      Icon(Icons.event_seat,
+                                          color: Colors.orangeAccent),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Seats Available',
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    ' $remainingSeats',
+                                    style: const TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(Icons.price_change_outlined,
+                                          color: Colors.orangeAccent),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Seats Price',
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    ' ${widget.offer['seatPrice']}  /Seat',
+                                    style: const TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
           Positioned(
             top: MediaQuery.of(context).size.height * 0.02,
             right: MediaQuery.of(context).size.width * 0.05,
@@ -533,7 +578,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               child: FloatingActionButton(
-                onPressed: () {
+                onPressed: remainingSeats == 0 ? null : () {
                   _showAddReservationDialog(context);
                 },
                 backgroundColor: const Color(0xFF009C77),
@@ -541,7 +586,12 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                child: const Text('Make Reservation', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  'Make Reservation',
+                  style: TextStyle(
+                    color: remainingSeats == 0 ? Colors.grey : Colors.white,
+                  ),
+                ),
               ),
             ),
           ),
@@ -579,35 +629,56 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                     ),
                   ),
                   Expanded(
-                    child: ListView.separated(
-                      itemCount: comments.length,
-                      itemBuilder: (context, index) {
-                        final comment = comments[index];
-                        final String userId = comment['user']['_id'];
-                        final bool isCurrentUserComment = userId == loggedInUserId;
+                    child: FutureBuilder<dynamic>(
+                      future: fetchComments(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text('Error: ${snapshot.error}'),
+                          );
+                        } else {
+                          final comments = snapshot.data!;
+                          return ListView.separated(
+                            itemCount: comments.length,
+                            itemBuilder: (context, index) {
+                              final comment = comments[index];
+                              final String userId = comment['user']['_id'];
+                              final bool isCurrentUserComment = userId == loggedInUserId;
 
-                        return ListTile(
-                          title: Text(
-                            comment['user']['username'] ?? '',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(comment['content'] ?? ''),
-                          trailing: isCurrentUserComment
-                              ? IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              _deleteComment(comment['_id']);
+                              return ListTile(
+                                title: Text(
+                                  comment['user']['username'] ?? '',
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text(comment['content'] ?? ''),
+                                trailing: isCurrentUserComment
+                                    ? IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                    size: 15,
+                                  ),
+                                  onPressed: () {
+                                    _deleteComment(comment['_id']);
+                                  },
+                                )
+                                    : null,
+                              );
                             },
-                          )
-                              : null,
-                        );
+                            separatorBuilder: (context, index) => const Divider(),
+                          );
+                        }
                       },
-                      separatorBuilder: (context, index) => const Divider(),
                     ),
-                  ),
 
+
+                  ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -617,7 +688,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: const Offset(0, 2),
+                            offset:  Offset(0, 2),
                           ),
                         ],
                       ),
@@ -626,18 +697,20 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                           Expanded(
                             child: TextField(
                               controller: _commentController,
-                              decoration: const InputDecoration(
+                              decoration:  InputDecoration(
                                 border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 16.0),
                                 hintText: 'Enter your comment here',
                                 hintStyle: TextStyle(color: Colors.grey),
                               ),
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.send, color: Colors.orangeAccent),
-                            onPressed: () {
-                              _sendComment();
+                            icon:  Icon(Icons.send,
+                                color: Colors.orangeAccent),
+                            onPressed: () async {
+                             await _sendComment();
                             },
                           ),
                         ],
@@ -652,6 +725,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       },
     );
   }
+
   void _showAddReservationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -715,7 +789,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                                       }
                                     });
                                   },
-                                  child: const Icon(Icons.remove, color: Color(0xFF009C77)),
+                                  child: const Icon(Icons.remove,
+                                      color: Color(0xFF009C77)),
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
@@ -732,7 +807,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                                       }
                                     });
                                   },
-                                  child: const Icon(Icons.add, color: Color(0xFF009C77)),
+                                  child: const Icon(Icons.add,
+                                      color: Color(0xFF009C77)),
                                 ),
                               ],
                             ),
@@ -759,9 +835,11 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                               value: paymentMethod,
                               decoration: const InputDecoration(
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xFF009C77)),
+                                  borderSide:
+                                      BorderSide(color: Color(0xFF009C77)),
                                 ),
-                                floatingLabelStyle: TextStyle(color: Color(0xFF009C77)),
+                                floatingLabelStyle:
+                                    TextStyle(color: Color(0xFF009C77)),
                                 labelText: 'Payment Method',
                                 border: OutlineInputBorder(),
                               ),
@@ -769,11 +847,20 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                                   .map((String value) {
                                 Widget leadingIcon = Container();
                                 if (value == 'Credit Card') {
-                                  leadingIcon = Image.asset('assets/images/creditCart.png', width: 30, height: 30);
+                                  leadingIcon = Image.asset(
+                                      'assets/images/creditCart.png',
+                                      width: 30,
+                                      height: 30);
                                 } else if (value == 'D17') {
-                                  leadingIcon = Image.asset('assets/images/d17.png', width: 30, height: 30);
+                                  leadingIcon = Image.asset(
+                                      'assets/images/d17.png',
+                                      width: 30,
+                                      height: 30);
                                 } else if (value == 'Cash') {
-                                  leadingIcon = Image.asset('assets/images/cach.png', width: 30, height: 30);
+                                  leadingIcon = Image.asset(
+                                      'assets/images/cach.png',
+                                      width: 30,
+                                      height: 30);
                                 }
                                 return DropdownMenuItem<String>(
                                   value: value,
@@ -798,9 +885,6 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                                 return null;
                               },
                             ),
-
-
-
                           ],
                         ),
                       )
@@ -809,16 +893,16 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           const Text(
-                            'Status:',
+                            'Status:',textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Colors.orangeAccent,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '$reservationStatus',
+                            '$reservationStatus',textAlign: TextAlign.center,
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],
@@ -826,9 +910,13 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
               ),
               actions: <Widget>[
                 TextButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                    MaterialStateProperty.all(Colors.red),
+                  ),
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
                     Navigator.of(context).pop();

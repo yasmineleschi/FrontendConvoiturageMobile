@@ -19,9 +19,11 @@ class _MyOffersPageState extends State<MyOffersPage> {
   List<dynamic> _offers = [];
   List<dynamic> filteredOffers = [];
 
+
   @override
   void initState() {
     super.initState();
+
     _getUserIDAndFetchOffers();
   }
 
@@ -34,15 +36,12 @@ class _MyOffersPageState extends State<MyOffersPage> {
         setState(() {
           _getUserIDAndFetchOffers();
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Car deleted successfully')));
+
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+
       }
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+
     }
   }
   List<dynamic> processOffers(List<dynamic> _offers) {
@@ -64,8 +63,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
 
     return _offers;
   }
-
-
 
   Future<void> _getUserIDAndFetchOffers() async {
     try {
@@ -114,25 +111,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
     }
   }
 
-
-  Future<Map<String, dynamic>> _fetchUserData(String userId) async {
-    try {
-      final response = await http.get(
-        Uri.parse('http://192.168.1.14:5000/api/users/profile/$userId'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-      if (response.statusCode == 200) {
-        return json.decode(response.body);
-      } else {
-        throw Exception('Failed to fetch user data');
-      }
-    } catch (e) {
-      print('Error fetching user data: $e');
-      return {};
-    }
-  }
 
   void _filterOffersByDestination(String destination) {
     if (destination.isEmpty) {

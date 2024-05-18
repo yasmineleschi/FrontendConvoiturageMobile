@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/Model/Reservation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReservationListScreen extends StatefulWidget {
@@ -27,7 +29,9 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       return [];
     }
 
-    final response = await http.get(Uri.parse('http://192.168.1.14:5000/api/reservations/$userId'));
+    final response = await http
+        .get(Uri.parse('http://192.168.1.14:5000/api/reservations/$userId'));
+
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map((data) => Reservation.fromJson(data)).toList();
@@ -35,25 +39,27 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       throw Exception('Failed to fetch reservations');
     }
   }
-  void _cancelReservation(String reservationId) async {
-    final url = Uri.parse('http://192.168.1.14:5000/api/reservations/$reservationId');
+
+  Future<void> _cancelReservation(String reservationId) async {
+    final url =
+        Uri.parse('http://192.168.1.14:5000/api/reservations/$reservationId');
     try {
       final response = await http.delete(url);
       if (response.statusCode == 200) {
-        // Mettre à jour la liste des réservations après l'annulation
         setState(() {
-          _futureReservations = fetchReservations(); // Recharge les données à partir du serveur
+          _futureReservations = fetchReservations();
         });
       } else {
-        throw Exception('Failed to cancel reservation');
+        throw Exception('Failed to delete reservation');
       }
     } catch (e) {
-      print('An error occurred while cancelling reservation: $e');
+      print('An error occurred while deleting reservation: $e');
     }
   }
 
   void _confirmReservation(String reservationId) async {
-    final url = Uri.parse('http://192.168.1.14:5000/api/reservations/$reservationId/confirm');
+    final url = Uri.parse(
+        'http://192.168.1.14:5000/api/reservations/$reservationId/status');
     try {
       final response = await http.put(url);
       if (response.statusCode == 200) {
@@ -71,10 +77,10 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF009C77),
+      backgroundColor: const Color(0xFF009C77),
       appBar: AppBar(
-        title: Text(
-          'Reservation List',
+        title: const Text(
+          'My request',
           style: TextStyle(
             fontStyle: FontStyle.italic,
             fontSize: 25,
@@ -84,13 +90,14 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           textAlign: TextAlign.center,
         ),
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color(0xFF009C77),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xFF009C77),
         elevation: 0,
       ),
       body: Container(
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Color(0xFFECECEC),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30.0),
             topRight: Radius.circular(30.0),
@@ -105,180 +112,171 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
               return Center(child: Text('Failed to fetch reservations'));
             } else {
               List<Reservation> reservations = snapshot.data!;
-              return ListView.builder(
-                itemCount: reservations.length,
-                itemBuilder: (context, index) {
-                  final reservation = reservations[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(
-                        'Reservation ',
-                        style: TextStyle(color: Colors.black87),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              return reservations.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Column(
-                                children: [
-                                  Text(
-                                    'Contact info',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                  Text(
-                                    '${reservation.contactInfo}',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                ],
-                              ),
-                            ],
+                          Lottie.asset('assets/animations/request.json',
+                              width: 150),
+                          SizedBox(height: 16),
+                          const Text(
+                            'No Requests Yet',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-
-                              Column(
-                                children: [
-                                  Text(
-                                    'Num of passengers',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                  Text(
-                                    '${reservation.numberOfPassengers}',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    DateFormat('HH:mm').format(DateTime.parse(reservation.reservationDateTime as String)),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  Text(
-                                    DateFormat('dd/MM/yyyy').format(DateTime.parse(reservation.reservationDateTime as String)),
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  const Text(
-                                    "Date of request",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                            ],
+                          SizedBox(height: 20),
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Color(0xFF009C77)),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              'Go Back',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Column(
-                                children: [
-                                  Text(
-                                    'Total Price:',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                  Text(
-                                    '${reservation.totalPrice}',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    'Method Payement',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                  Text(
-                                    '${reservation.paymentMethod}',
-                                    style: TextStyle(color: Colors.black54),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  _confirmReservation(reservation.id);
-                                },
-                                child: Text('Confirm'),
-                              ),
-                              SizedBox(width: 8),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  _cancelReservation(reservation.id);
-                                },
-
-                                child: Text('Cancel'),
-                              ),
-                            ],
-                          )
                         ],
                       ),
-
-                    ),
-                  );
-                },
-              );
+                    )
+                  : ListView.builder(
+                      reverse: true,
+                      itemCount: reservations.length,
+                      itemBuilder: (context, index) {
+                        final reservation = reservations[index];
+                        return Card(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                'Reservation ${index + 1}',
+                                style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Contact Info: ',
+                                        style: TextStyle(
+                                            color: Colors.orangeAccent,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text('${reservation.contactInfo}',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Payment Method: ',
+                                        style: TextStyle(
+                                            color: Colors.orangeAccent,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text('${reservation.paymentMethod}',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Total Price: ',
+                                        style: TextStyle(
+                                            color: Colors.orangeAccent,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text('${reservation.totalPrice}/DT',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Passengers: ',
+                                        style: TextStyle(
+                                            color: Colors.orangeAccent,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text('${reservation.numberOfPassengers}',
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  if (reservation.status == 'Confirmed')
+                                    Text(
+                                      'Status: Confirmed',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15),
+                                    )
+                                  else
+                                    Row(
+                                      children: [
+                                        ElevatedButton(
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Color(0xFF009C77)),
+                                          ),
+                                          onPressed: () => _confirmReservation(
+                                              reservation.id),
+                                          child: Text(
+                                            'Confirm',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        ElevatedButton(
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.red),
+                                          ),
+                                          onPressed: () => _cancelReservation(
+                                              reservation.id),
+                                          child: Text(
+                                            'refuse',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              ),
+                            ));
+                      },
+                    );
             }
           },
         ),
       ),
     );
   }
-
-
-}
-class Reservation {
-  final String id;
-  final String? contactInfo;
-  final double? totalPrice;
-  final int? numberOfPassengers;
-  final String? reservationDateTime;
-  final String? paymentMethod;
-  final String? status; // Ajouter le champ status
-
-  Reservation({
-    required this.id,
-    required this.contactInfo,
-    required this.totalPrice,
-    required this.numberOfPassengers,
-    required this.reservationDateTime,
-    required this.paymentMethod,
-    required this.status, // Initialiser le champ status dans le constructeur
-  });
-
-  factory Reservation.fromJson(Map<String, dynamic> json) {
-    return Reservation(
-      id: json['_id'],
-      contactInfo: json['contactInfo'],
-      totalPrice: json['totalPrice']?.toDouble(),
-      numberOfPassengers: json['numberOfPassengers'],
-      reservationDateTime: json['reservationDateTime'],
-      paymentMethod: json['paymentMethod'],
-      status: json['status'],
-    );
-  }
-}
-
-
-void main() {
-  runApp(MaterialApp(
-    home: ReservationListScreen(),
-  ));
 }

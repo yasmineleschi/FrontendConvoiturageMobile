@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -53,7 +54,10 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
 
   late int selectedSeats;
   void _initializeFormFields() {
-    _departureDateTimeController.text = widget.departureDateTime;
+    DateTime departureDateTime = DateTime.parse(widget.departureDateTime);
+    String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(departureDateTime);
+
+    _departureDateTimeController.text = formattedDateTime;
     _departureLocationController.text = widget.departureLocation;
     _destinationLocationController.text = widget.destinationLocation;
     _seatPriceController.text = widget.seatPrice;
@@ -102,12 +106,12 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                           Center(
                             child: Text(
-                              "Update your Offer",
+                              "Update Your Offer",
                               style: TextStyle(
-                                fontSize: 15,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF009C77),
                               ),
@@ -122,12 +126,13 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                               color: Colors.black,
                             ),
                           ),
+                          const SizedBox(height: 8),
                           TextFormField(
                             controller: _departureLocationController,
                             decoration: InputDecoration(
                               labelText: 'Departure Location',
                               prefixIcon: Icon(
-                                Icons.location_on_outlined,
+                                Icons.my_location,
                                 color: Colors.black,
                               ),
                               suffixIcon: IconButton(
@@ -153,6 +158,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                               color: Colors.black,
                             ),
                           ),
+                          const SizedBox(height: 8),
                           TextFormField(
                             controller: _destinationLocationController,
                             decoration: InputDecoration(
@@ -175,6 +181,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 10),
                           Center(
                             child: Text(
                               "Details",
@@ -263,6 +270,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
 
                             ],
                           ),
+                          const SizedBox(height: 10),
                           DropdownButtonFormField<String>(
                             value: status,
                             onChanged: (String? newValue) {
@@ -302,7 +310,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
                           Center(
                             child: ElevatedButton(
                               onPressed: _updateOffer,
