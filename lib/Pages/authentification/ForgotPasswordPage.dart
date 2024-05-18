@@ -18,9 +18,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Forgot Password'),
-      ),
       body: Stack(
         children: [
           Container(
@@ -109,7 +106,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final email = _emailController.text;
 
     try {
-      final url = Uri.parse('http://192.168.1.15:5000/api/users/forgot-password');
+      final url = Uri.parse('http://192.168.1.14:5000/api/users/forgot-password');
       final headers = <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       };
@@ -157,7 +154,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final newPassword = _newPasswordController.text;
 
     try {
-      final url = Uri.parse('http://192.168.1.15:5000/api/users/reset-password');
+      final url = Uri.parse('http://192.168.1.14:5000/api/users/reset-password');
       final headers = <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       };

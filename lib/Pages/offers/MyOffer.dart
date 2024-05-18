@@ -26,7 +26,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
   }
 
   Future<void> deleteCar(String carId) async {
-    final url = 'http://192.168.1.15:5000/api/car/$carId';
+    final url = 'http://192.168.1.14:5000/api/car/$carId';
     try {
       final response = await http.delete(Uri.parse(url));
 
@@ -48,7 +48,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
   List<dynamic> processOffers(List<dynamic> _offers) {
 
     _offers.sort((a, b) {
-      // Ordre de tri: 'Disponible' < 'En cours' < 'Indisponible'
+
       if (a['status'] == 'Disponible') {
         return -1;
       } else if (b['status'] == 'Disponible') {
@@ -62,7 +62,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
       }
     });
 
-    // Retourner la liste triée
     return _offers;
   }
 
@@ -76,19 +75,19 @@ class _MyOffersPageState extends State<MyOffersPage> {
         throw Exception('User ID is null');
       }
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/car/user/$userId'),
+        Uri.parse('http://192.168.1.14:5000/api/car/user/$userId'),
         headers: {
           'Content-Type': 'application/json',
         },
       );
       if (response.statusCode == 200) {
-        // Récupérer les offres depuis la réponse
+
         List<dynamic> fetchedOffers = json.decode(response.body);
 
-        // Trier les offres par statut
+
         List<dynamic> sortedOffers = processOffers(fetchedOffers);
 
-        // Mettre à jour l'état avec les offres triées
+
         setState(() {
           _offers = sortedOffers;
           filteredOffers = List.from(sortedOffers);
@@ -119,7 +118,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
   Future<Map<String, dynamic>> _fetchUserData(String userId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
+        Uri.parse('http://192.168.1.14:5000/api/users/profile/$userId'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -183,7 +182,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
       ),
       drawer: SideBar(),
       body: Container(
-        color: Colors.grey[200],
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -205,7 +204,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                       borderSide: BorderSide.none,
                     ),
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.search),
+                      icon: Icon(Icons.search , color: Colors.black),
                       onPressed: () {
                         // Perform search action
                       },
@@ -228,7 +227,7 @@ class _MyOffersPageState extends State<MyOffersPage> {
                         ),
                       );
                     },
-                    child: Container(
+                    child:Container(
                       margin: EdgeInsets.all(10),
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -236,13 +235,12 @@ class _MyOffersPageState extends State<MyOffersPage> {
                         gradient: const LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [ Color(0xFFFFFFFF)],
-
+                          colors: [Color(0xFFFFFFFF), Color(0xFFEBEBEB)],
                         ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Column(
+                        child:  Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(

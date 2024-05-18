@@ -286,7 +286,7 @@ class _SignupPageState extends State<SignupPage> {
 
 Future<void> signup(String username, String password, String email,
     BuildContext context) async {
-  const url = 'http://192.168.1.15:5000/api/users/register';
+  const url = 'http://192.168.1.14:5000/api/users/register';
 
   Map<String, String> body = {
     'username': username,

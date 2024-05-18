@@ -347,7 +347,7 @@ class _UpdateOffrePageState extends State<UpdateOffrePage> {
 
       if (userId != null) {
         final response = await http.put(
-          Uri.parse('http://192.168.1.15:5000/api/car/${widget.offerId}'),
+          Uri.parse('http://192.168.1.14:5000/api/car/${widget.offerId}'),
           headers: {
             'Content-Type': 'application/json',
           },

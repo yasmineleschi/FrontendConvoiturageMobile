@@ -27,7 +27,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       return [];
     }
 
-    final response = await http.get(Uri.parse('http://192.168.1.15:5000/api/reservations/$userId'));
+    final response = await http.get(Uri.parse('http://192.168.1.14:5000/api/reservations/$userId'));
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map((data) => Reservation.fromJson(data)).toList();
@@ -36,7 +36,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     }
   }
   void _cancelReservation(String reservationId) async {
-    final url = Uri.parse('http://192.168.1.15:5000/api/reservations/$reservationId');
+    final url = Uri.parse('http://192.168.1.14:5000/api/reservations/$reservationId');
     try {
       final response = await http.delete(url);
       if (response.statusCode == 200) {
@@ -53,7 +53,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   }
 
   void _confirmReservation(String reservationId) async {
-    final url = Uri.parse('http://192.168.1.15:5000/api/reservations/$reservationId/confirm');
+    final url = Uri.parse('http://192.168.1.14:5000/api/reservations/$reservationId/confirm');
     try {
       final response = await http.put(url);
       if (response.statusCode == 200) {

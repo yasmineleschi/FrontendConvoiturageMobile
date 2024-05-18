@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
   Future<Map<String, dynamic>> _fetchUserData(String user) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/users/profile/$user'),
+        Uri.parse('http://192.168.1.14:5000/api/users/profile/$user'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchOffers() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/car/'),
+        Uri.parse('http://192.168.1.14:5000/api/car/'),
         headers: {
           'Content-Type': 'application/json',
         },

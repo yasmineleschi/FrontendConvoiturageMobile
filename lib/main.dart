@@ -1,9 +1,6 @@
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:frontendcovoituragemobile/pages/Reservation/ReservationList.dart';
-import 'package:frontendcovoituragemobile/pages/offers/AddTrajet.dart';
 import 'package:frontendcovoituragemobile/pages/Navigation/navigation_bar.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/signup_page.dart';
 import 'package:frontendcovoituragemobile/pages/authentification/login.dart';
@@ -25,6 +22,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primaryColor: Color(0xFF009C77),
+        colorScheme: ColorScheme(
+          primary: Color(0xFF009C77), // Couleur verte
+          secondary: Color(0xFFFF9800), // Couleur orange
+          surface: Color(0xFFECECEC),
+          background: Color(0xFFECECEC),
+          error: Colors.red,
+          onPrimary: Colors.white,
+          onSecondary: Colors.white,
+          onSurface: Colors.black,
+          onBackground: Colors.black,
+          onError: Colors.white,
+          brightness: Brightness.light,
+        ),
+      ),
       debugShowCheckedModeBanner: false,
 
 

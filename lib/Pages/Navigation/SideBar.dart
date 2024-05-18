@@ -41,7 +41,7 @@ class _SideBarState extends State<SideBar> {
       }
 
       final response = await http.get(
-        Uri.parse('http://192.168.1.15:5000/api/users/profile/$userId'),
+        Uri.parse('http://192.168.1.14:5000/api/users/profile/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -105,7 +105,7 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
-          Divider(),
+
           ListTile(
             leading: Icon(Icons.list, color: Colors.deepOrangeAccent),
             title: Text('My Offers'),
@@ -118,7 +118,7 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
-          Divider(),
+
           ListTile(
             leading: Icon(Icons.request_page, color: Colors.deepOrangeAccent),
             title: Text('Reservations'),
@@ -131,7 +131,7 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
-          Divider(),
+
           ListTile(
             leading: Icon(Icons.favorite, color: Colors.deepOrangeAccent),
             title: const Text('My Favorite'),
@@ -142,7 +142,6 @@ class _SideBarState extends State<SideBar> {
               );
             },
           ),
-          Divider(),
 
           ListTile(
             leading: Icon(Icons.settings, color: Colors.deepOrangeAccent),
@@ -151,7 +150,7 @@ class _SideBarState extends State<SideBar> {
 
             },
           ),
-          Divider(),
+
           ListTile(
             leading: Icon(Icons.info, color: Colors.deepOrangeAccent),
             title: Text('About Us'),
