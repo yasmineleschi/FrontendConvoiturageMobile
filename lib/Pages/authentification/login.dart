@@ -25,97 +25,97 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
 
       body: Stack(
-          children: [
-      Container(
-      decoration: const BoxDecoration(
-      image: DecorationImage(
-          image: AssetImage("assets/images/back.png"),
-      fit: BoxFit.cover,
-    ),
-    ),
-    ),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: ListView(
-            children: <Widget>[
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(10),
-                child: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/back.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: ListView(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+
+                      SizedBox(height: 30,),
+
+                      Image.asset(
+                        'assets/images/car.png',
+                        width: 120,
+                        height: 120,
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'WELCOME BACK',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 40,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _buildEmailField(),
+                const SizedBox(height: 10),
+                _buildPasswordField(),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
 
-                    SizedBox(height: 30,),
-
-                    Image.asset(
-                      'assets/images/car.png',
-                      width: 120,
-                      height: 120,
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'WELCOME BACK',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 40,
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                        );
+                      },
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              _buildEmailField(),
-              const SizedBox(height: 10),
-              _buildPasswordField(),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-                      );
-                    },
-                    child: const Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        color: Colors.black,
+                const SizedBox(height: 20),
+                _buildLoginButton(),
+                const SizedBox(height: 20),
+                Row(
+                  children: <Widget>[
+                    const Text('You Don’t Have An Account ? '),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignupPage()),
+                        );
+                      },
+                      child: const Text(
+                        'SignUp',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Color(0xFF009C77),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              _buildLoginButton(),
-              const SizedBox(height: 20),
-              Row(
-                children: <Widget>[
-                  const Text('You Don’t Have An Account ? '),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignupPage()),
-                      );
-                    },
-                    child: const Text(
-                      'SignUp',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Color(0xFF009C77),
-                      ),
-                    ),
-                  ),
-                ],
-                mainAxisAlignment: MainAxisAlignment.center,
-              ),
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                ),
 
-            ],
+              ],
+            ),
           ),
-        ),
-  ],
+        ],
       ),
 
     );
@@ -147,9 +147,9 @@ class _LoginPageState extends State<LoginPage> {
       controller: _passwordController,
       obscureText: hidepassword,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Password',
-        prefixIcon: Icon(Icons.lock), // Add icon for password
+          border: OutlineInputBorder(),
+          labelText: 'Password',
+          prefixIcon: Icon(Icons.lock), // Add icon for password
           suffixIcon: IconButton(
             onPressed: () {
               setState(() {
@@ -202,7 +202,11 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       try {
+<<<<<<< HEAD:lib/Pages/authentification/login.dart
         final url = Uri.parse('http://192.168.1.14:5000/api/users/login');
+=======
+        final url = Uri.parse('http://192.168.240.204:5000/api/users/login');
+>>>>>>> 8c3bd18a7fdda973a748335a15c2c77490d62772:lib/pages/authentification/login.dart
         final headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         };

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
+
 class ProfilPage extends StatefulWidget {
   @override
   _ProfilPageState createState() => _ProfilPageState();
@@ -14,15 +15,9 @@ class _ProfilPageState extends State<ProfilPage> {
   bool _isLoading = false;
   String _error = '';
   File? _image;
+  bool _isEditing = false;
+  String? _imagePath;
 
-  Future pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _ageController = TextEditingController();
@@ -55,7 +50,11 @@ class _ProfilPageState extends State<ProfilPage> {
       }
 
       final response = await http.get(
+<<<<<<< HEAD:lib/Pages/authentification/profile.dart
         Uri.parse('http://192.168.1.14:5000/api/users/profile/$userId'),
+=======
+        Uri.parse('http://192.168.240.204:5000/api/users/profile/$userId'),
+>>>>>>> 8c3bd18a7fdda973a748335a15c2c77490d62772:lib/pages/authentification/profile.dart
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -73,15 +72,7 @@ class _ProfilPageState extends State<ProfilPage> {
           _lastnameController.text = _userData!['lastname'] ?? '';
           _addressController.text = _userData!['address'] ?? '';
           _selectedStatus = _userData!['etat'];
-
-          // Check if _userData!['image'] is a String (image path)
-          if (_userData!['image'] is String) {
-            // Load image from path and assign it to _image
-            _image = File(_userData!['image']);
-          } else {
-            // If it's not a String, assume it's already a File and assign it directly
-            _image = _userData!['image'];
-          }
+          _imagePath = _userData!['image'];
         });
       } else {
         _setError('Failed to load user data. Status code: ${response.statusCode}');
@@ -95,7 +86,6 @@ class _ProfilPageState extends State<ProfilPage> {
       });
     }
   }
-
 
   void _setError(String errorMessage) {
     setState(() {
@@ -115,7 +105,11 @@ class _ProfilPageState extends State<ProfilPage> {
 
       final request = http.MultipartRequest(
         'PUT',
+<<<<<<< HEAD:lib/Pages/authentification/profile.dart
         Uri.parse('http://192.168.1.14:5000/api/users/update/$userId'),
+=======
+        Uri.parse('http://192.168.240.204:5000/api/users/update/$userId'),
+>>>>>>> 8c3bd18a7fdda973a748335a15c2c77490d62772:lib/pages/authentification/profile.dart
       );
 
       request.headers['Authorization'] = 'Bearer $token';
@@ -197,80 +191,20 @@ class _ProfilPageState extends State<ProfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body: SingleChildScrollView(
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : _error.isNotEmpty
-            ? Center(child: Text(_error))
-            : _userData != null
-            ? Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Center content horizontally
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/images/car.png'),
-                radius: 50,
-              ),
-              SizedBox(height: 20),
-              Text(
-                _userData!['username'] ?? '',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: _selectedStatus ?? _userData!['etat'],
-                decoration: InputDecoration(
-                  labelText: 'Status',
-
-                  prefixIcon: Icon(Icons.medical_information_outlined),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedStatus = newValue;
-                  });
-                },
-                items: <String>['PASSENGER', 'DRIVER'].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: 20),
-              _buildTextField('Username', _usernameController, Icons.accessibility),
-              _buildTextField('Email', _emailController, Icons.email),
-              _buildTextField('Age', _ageController, Icons.person),
-              _buildTextField('Phone', _phoneController, Icons.phone),
-              _buildTextField('First Name', _firstnameController, Icons.person),
-              _buildTextField('Last Name', _lastnameController, Icons.person),
-              _buildTextField('Address', _addressController, Icons.location_on),
-              imageField(),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _updateProfile,
-                child: Text(
-                  'Update Profile',
-                  style: TextStyle(color: Colors.white), // Set text color to white
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF009C77), // Set button color
-                ),
-              ),
-              SizedBox(height: 100),
-            ],
+      appBar: AppBar(
+        title: Text('Profile'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isEditing = !_isEditing;
+              });
+            },
+            icon: Icon(Icons.edit),
           ),
-        )
-            : Center(
-          child: Text('No user data available.'),
-        ),
+        ],
       ),
+<<<<<<< HEAD:lib/Pages/authentification/profile.dart
     );
   }
   Widget imageField() {
@@ -300,26 +234,142 @@ class _ProfilPageState extends State<ProfilPage> {
             height: 100,
             fit: BoxFit.cover,
           ),
+=======
+      body: Center(
+        child: SingleChildScrollView(
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : _error.isNotEmpty
+              ? Center(child: Text(_error))
+              : _userData != null
+              ? Padding(
+            padding: const EdgeInsets.all(20),
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: _image != null
+                          ? FileImage(_image!)
+                          : _imagePath != null
+                          ? NetworkImage('http://192.168.240.204:5000/uploads/$_imagePath')
+                          : AssetImage('assets/images/car.png') as ImageProvider,
+                      radius: 50,
+                      child: _isEditing
+                          ? IconButton(
+                        icon: Icon(Icons.camera_alt),
+                        onPressed: () async {
+                          final pickedFile = await ImagePicker()
+                              .pickImage(source: ImageSource.gallery);
+                          if (pickedFile != null) {
+                            setState(() {
+                              _image = File(pickedFile.path);
+                            });
+                          }
+                        },
+                      )
+                          : null,
+                    ),
+                    SizedBox(height: 20),
+                    _isEditing
+                        ? DropdownButtonFormField<String>(
+                      value: _selectedStatus ?? _userData!['etat'],
+                      decoration: InputDecoration(
+                        labelText: 'Status',
+                        prefixIcon: Icon(Icons.medical_information_outlined),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedStatus = newValue;
+                        });
+                      },
+                      items: <String>['PASSENGER', 'DRIVER']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    )
+                        : _buildInfoRow(Icons.medical_information_outlined, _userData!['etat']),
+                    SizedBox(height: 20),
+                    _isEditing
+                        ? _buildTextField('Username', _usernameController, Icons.accessibility)
+                        : _buildInfoRow(Icons.accessibility, _userData!['username'] ?? ''),
+                    _isEditing
+                        ? _buildTextField('Email', _emailController, Icons.email)
+                        : _buildInfoRow(Icons.email, _userData!['email'] ?? ''),
+                    _isEditing
+                        ? _buildTextField('Age', _ageController, Icons.person)
+                        : _buildInfoRow(Icons.person, _userData!['age'] ?? ''),
+                    _isEditing
+                        ? _buildTextField('Phone', _phoneController, Icons.phone)
+                        : _buildInfoRow(Icons.phone, _userData!['phone'] ?? ''),
+                    _isEditing
+                        ? _buildTextField('First Name', _firstnameController, Icons.text_fields)
+                        : _buildInfoRow(Icons.text_fields, _userData!['firstname'] ?? ''),
+                    _isEditing
+                        ? _buildTextField('Last Name', _lastnameController, Icons.text_fields)
+                        : _buildInfoRow(Icons.text_fields, _userData!['lastname'] ?? ''),
+                    _isEditing
+                        ? _buildTextField('Address', _addressController, Icons.home)
+                        : _buildInfoRow(Icons.home, _userData!['address'] ?? ''),
+                    if (_isEditing)
+                      SizedBox(height: 20),
+                    if (_isEditing)
+                      ElevatedButton(
+                        onPressed: _updateProfile,
+                        child: Text('Update Profile'),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          )
+              : Center(child: Text('No user data available')),
+>>>>>>> 8c3bd18a7fdda973a748335a15c2c77490d62772:lib/pages/authentification/profile.dart
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {TextStyle? inputStyle, TextStyle? labelStyle}) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
+  Widget _buildTextField(String labelText, TextEditingController controller, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextField(
         controller: controller,
-        style: inputStyle,
         decoration: InputDecoration(
-          labelText: label,
-          labelStyle: labelStyle,
+          labelText: labelText,
           prefixIcon: Icon(icon),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          filled: true, // Add this line to enable filling
-          fillColor: Colors.white, // Set the background color to white
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.grey),
+        SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
