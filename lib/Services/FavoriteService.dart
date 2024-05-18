@@ -11,7 +11,19 @@ class FavoriteService {
       throw Exception('Failed to fetch favorites: ${response.statusCode}');
     }
   }
+  Future<void> addFavorite(String userId, String carId) async {
+    final url = Uri.parse('http://192.168.1.14:5000/api/favorie/$userId/$carId');
+    final headers = <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+    final body = jsonEncode({'user': userId, 'car': carId});
 
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode != 201) {
+      throw Exception('Failed to add favorite');
+    }
+  }
   Future<void> removeFavorite(String favoriteId) async {
     final response = await http
         .delete(Uri.parse('http://192.168.1.14:5000/api/favorie/$favoriteId'));

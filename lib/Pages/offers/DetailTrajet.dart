@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontendcovoituragemobile/Services/CommentService.dart';
+import 'package:frontendcovoituragemobile/Services/FavoriteService.dart';
+import 'package:frontendcovoituragemobile/Services/UserService.dart';
 import 'package:frontendcovoituragemobile/pages/Favorite.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -19,94 +22,9 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   List<dynamic> comments = [];
   TextEditingController _commentController = TextEditingController();
   late String? loggedInUserId;
-
   late int initialSeatsAvailable;
-
   late int? remainingSeats;
-  void updateRemainingSeats() {
-    setState(() {
-      remainingSeats = initialSeatsAvailable - numberOfPassengers;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchComments();
-
-    getUserId().then((userId) {
-      loggedInUserId = userId;
-
-      initialSeatsAvailable = (widget.offer['seatAvailable'] as int);
-
-      updateRemainingSeats();
-      contactController = TextEditingController();
-      fetchOfferUserDetails(widget.offer['user']);
-    });
-  }
-
-  Future<void> fetchComments() async {
-    final response = await http.get(Uri.parse(
-        'http://192.168.1.14:5000/api/car/api/comments/${widget.offer['_id']}'));
-
-    if (response.statusCode == 200) {
-      setState(() {
-        comments = json.decode(response.body);
-      });
-    } else {
-      // Handle error, maybe show a Snackbar or an AlertDialog
-      print('Failed to fetch comments: ${response.statusCode}');
-    }
-  }
-
-  Future<String?> getUserId() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userId');
-  }
-
-  Future<void> _sendComment() async {
-    final commentContent = _commentController.text;
-    final userId = loggedInUserId;
-
-    if (userId != null) {
-      final carId = widget.offer['_id'];
-      final url =
-          Uri.parse('http://192.168.1.14:5000/api/car/api/comments/$carId');
-      final headers = <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      };
-      final body =
-          jsonEncode({'user': userId, 'car': carId, 'content': commentContent});
-
-      final response = await http.post(url, headers: headers, body: body);
-
-      if (response.statusCode == 201) {
-        fetchComments();
-        _commentController.clear();
-      } else {
-        // Handle error
-      }
-    } else {
-      // Handle error (user ID not found in SharedPreferences)
-    }
-  }
-
-  Future<void> _deleteComment(String commentId) async {
-    final url =
-        Uri.parse('http://192.168.1.14:5000/api/car/api/comments/$commentId');
-    final response = await http.delete(url);
-
-    if (response.statusCode == 200) {
-      // Reload comments after deletion
-      fetchComments();
-    } else {
-      // Handle error
-      print('Failed to delete comment: ${response.statusCode}');
-    }
-  }
-
   bool isFavorite = false;
-
   late String? offerUserId;
   String? offerUsername;
   String? offerAge;
@@ -114,18 +32,75 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   String? offerphone;
   String? offeradress;
   String? _image;
+  late String reservationStatus = 'Pending';
+  bool _showForm = true;
+  late String paymentMethod = "Cash";
+  late int numberOfPassengers = 1;
+
+  void updateRemainingSeats() {
+    setState(() {
+      remainingSeats = initialSeatsAvailable - numberOfPassengers;
+    });
+  }
+
+  void _calculateTotalPrice() {
+    totalPrice = numberOfPassengers * (widget.offer['seatPrice'] as int);
+  }
+
+  final TextEditingController ContactController = TextEditingController();
+  bool _showDetails = false;
+  final _formKey = GlobalKey<FormState>();
+  late int totalPrice = (widget.offer['seatPrice'] as int);
+  late TextEditingController contactController;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchComments();
+    getUserId().then((userId) {
+      loggedInUserId = userId;
+      initialSeatsAvailable = (widget.offer['seatAvailable'] as int);
+      updateRemainingSeats();
+      contactController = TextEditingController();
+      fetchOfferUserDetails(widget.offer['user']);
+    });
+  }
+  @override
+  void dispose() {
+    contactController.dispose();
+    super.dispose();
+  }
+
+  Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
+  }
+  Future<void> _sendComment() async {
+    final commentContent = _commentController.text;
+    final userId = loggedInUserId;
+    if (userId != null) {
+      await CommentService.addComment(userId, widget.offer.id, commentContent);
+      fetchComments();
+      _commentController.clear();
+    } else {
+    }
+  }
+  Future<void> fetchComments() async {
+    final response = await CommentService.fetchComments(widget.offer['_id']);
+    setState(() {
+      comments = response;
+    });
+  }
+  Future<void> _deleteComment(String commentId) async {
+    await CommentService.deleteComment(commentId);
+    setState(() {
+      comments.removeWhere((comment) => comment['_id'] == commentId );;
+    });
+  }
   Future<void> addFavorite(String? userId, String carId) async {
     if (userId != null) {
-      final url =
-      Uri.parse('http://192.168.1.14:5000/api/favorie/$userId/$carId');
-      final headers = <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      };
-      final body = jsonEncode({'user': userId, 'car': carId});
-
-      final response = await http.post(url, headers: headers, body: body);
-
-      if (response.statusCode == 201) {
+      try {
+        await FavoriteService().addFavorite(userId, carId);
         setState(() {
           isFavorite = true;
         });
@@ -135,41 +110,64 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
           MaterialPageRoute(
               builder: (context) => FavoriteListPage(userId: userId)),
         );
-      } else {
-        print('Failed to add car to favorites');
+      } catch (e) {
+        print('Failed to add car to favorites: $e');
       }
     } else {
       print('User ID not found');
     }
   }
-
   Future<void> fetchOfferUserDetails(String userId) async {
     try {
-      final response = await http.get(
-        Uri.parse('http://192.168.1.14:5000/api/users/profile/$userId'),
-        headers: {
-          'Content-Type': 'application/json',
+      final userDetails = await UserService.fetchUserDetails(userId);
+      setState(() {
+        offerUserId = userId;
+        offerUsername = userDetails['username'];
+        offerAge = userDetails['age'];
+        offerlastName = userDetails['lastname'];
+        offerphone = userDetails['phone'];
+        offeradress = userDetails['address'];
+        _image = userDetails['image'];
+      });
+    } catch (e) {
+      print('Failed to fetch offer user details: $e');
+    }
+  }
+  Future<void> _addReservation() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+
+    if (userId == null) {
+      print('User ID not found');
+      return;
+    }
+
+    var url = Uri.parse('http://192.168.1.14:5000/api/reservations/');
+    Map<String, dynamic> data = {
+      'userId': offerUserId,
+      'passengerid': userId,
+      'carId': widget.offer['_id'],
+      'numberOfPassengers': numberOfPassengers.toString(),
+      'totalPrice': totalPrice.toString(),
+      'paymentMethod': paymentMethod,
+      'contactInfo': contactController.text,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        body: jsonEncode(data),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
         },
       );
 
-      if (response.statusCode == 200) {
-        final userData = json.decode(response.body);
-        setState(() {
-          offerUserId = userId;
-          offerUsername = userData['username'];
-          offerAge = userData['age'];
-          offerlastName = userData['lastname'];
-          offerphone = userData['phone'];
-          offeradress = userData['address'];
-          _image = userData['image'];
-        });
+      if (response.statusCode == 201) {
       } else {
-        // Handle error
-        print('Failed to fetch offer user details: ${response.statusCode}');
+        final errorResponse = json.decode(response.body);
       }
     } catch (e) {
-      // Handle error
-      print('An error occurred while fetching offer user details: $e');
+      setState(() {});
     }
   }
 
@@ -204,9 +202,6 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
               ),
             ),
           ),
-
-
-
           SingleChildScrollView(
           child:Column(
             children: [
@@ -532,7 +527,6 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
               child: const Icon(Icons.comment, color: Colors.black),
             ),
           ),
-
           Positioned(
             bottom: MediaQuery.of(context).size.height * 0.02,
             right: MediaQuery.of(context).size.width * 0.05,
@@ -585,39 +579,33 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                     ),
                   ),
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: comments.length,
-                        itemBuilder: (context, index) {
-                          final comment = comments[index];
-                          final String userId = comment['user']['_id'];
-                          final bool isCurrentUserComment = userId == loggedInUserId;
+                    child: ListView.separated(
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        final comment = comments[index];
+                        final String userId = comment['user']['_id'];
+                        final bool isCurrentUserComment = userId == loggedInUserId;
 
-                          return Column(
-                            children: [
-                              ListTile(
-                                title: Text(
-                                  comment['user']['username'] ?? '',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Text(comment['content'] ?? ''),
-                                trailing: isCurrentUserComment
-                                    ? IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () {
-                                    _deleteComment(comment['_id']);
-                                  },
-                                )
-                                    : null,
-                              ),
-                              const Divider(),
-                            ],
-                          );
-                        },
-                      ),
+                        return ListTile(
+                          title: Text(
+                            comment['user']['username'] ?? '',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(comment['content'] ?? ''),
+                          trailing: isCurrentUserComment
+                              ? IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              _deleteComment(comment['_id']);
+                            },
+                          )
+                              : null,
+                        );
+                      },
+                      separatorBuilder: (context, index) => const Divider(),
                     ),
                   ),
+
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
@@ -664,70 +652,6 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       },
     );
   }
-
-
-
-  bool _showDetails = false;
-  final _formKey = GlobalKey<FormState>();
-
-  late int totalPrice = (widget.offer['seatPrice'] as int);
-  late String paymentMethod = "Cash";
-  late int numberOfPassengers = 1;
-
-  late TextEditingController contactController;
-
-  @override
-  void dispose() {
-    contactController.dispose();
-    super.dispose();
-  }
-
-  void _calculateTotalPrice() {
-    totalPrice = numberOfPassengers * (widget.offer['seatPrice'] as int);
-  }
-
-  final TextEditingController ContactController = TextEditingController();
-
-  Future<void> _addReservation() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
-
-    if (userId == null) {
-      print('User ID not found');
-      return;
-    }
-
-    var url = Uri.parse('http://192.168.1.14:5000/api/reservations/');
-    Map<String, dynamic> data = {
-      'userId': offerUserId,
-      'passengerid': userId,
-      'carId': widget.offer['_id'],
-      'numberOfPassengers': numberOfPassengers.toString(),
-      'totalPrice': totalPrice.toString(),
-      'paymentMethod': paymentMethod,
-      'contactInfo': contactController.text,
-    };
-
-    try {
-      final response = await http.post(
-        url,
-        body: jsonEncode(data),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
-
-      if (response.statusCode == 201) {
-      } else {
-        final errorResponse = json.decode(response.body);
-      }
-    } catch (e) {
-      setState(() {});
-    }
-  }
-
-  late String reservationStatus = 'Pending';
-  bool _showForm = true;
   void _showAddReservationDialog(BuildContext context) {
     showDialog(
       context: context,

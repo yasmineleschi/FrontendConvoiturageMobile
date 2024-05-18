@@ -202,11 +202,8 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       try {
-<<<<<<< HEAD:lib/Pages/authentification/login.dart
         final url = Uri.parse('http://192.168.1.14:5000/api/users/login');
-=======
-        final url = Uri.parse('http://192.168.240.204:5000/api/users/login');
->>>>>>> 8c3bd18a7fdda973a748335a15c2c77490d62772:lib/pages/authentification/login.dart
+
         final headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         };

@@ -50,11 +50,9 @@ class _ProfilPageState extends State<ProfilPage> {
       }
 
       final response = await http.get(
-<<<<<<< HEAD:lib/Pages/authentification/profile.dart
+
         Uri.parse('http://192.168.1.14:5000/api/users/profile/$userId'),
-=======
-        Uri.parse('http://192.168.240.204:5000/api/users/profile/$userId'),
->>>>>>> 8c3bd18a7fdda973a748335a15c2c77490d62772:lib/pages/authentification/profile.dart
+
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -105,11 +103,8 @@ class _ProfilPageState extends State<ProfilPage> {
 
       final request = http.MultipartRequest(
         'PUT',
-<<<<<<< HEAD:lib/Pages/authentification/profile.dart
+
         Uri.parse('http://192.168.1.14:5000/api/users/update/$userId'),
-=======
-        Uri.parse('http://192.168.240.204:5000/api/users/update/$userId'),
->>>>>>> 8c3bd18a7fdda973a748335a15c2c77490d62772:lib/pages/authentification/profile.dart
       );
 
       request.headers['Authorization'] = 'Bearer $token';
@@ -204,37 +199,6 @@ class _ProfilPageState extends State<ProfilPage> {
           ),
         ],
       ),
-<<<<<<< HEAD:lib/Pages/authentification/profile.dart
-    );
-  }
-  Widget imageField() {
-    return InkWell(
-      onTap: pickImage,
-      child: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: _image == null
-            ? IconButton(
-          icon: Icon(
-            Icons.image,
-            color: Colors.black,
-          ),
-          onPressed: pickImage,
-        )
-            : ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Image.network(
-
-            'http://192.168.1.14:5000/uploads/${_userData!['image']}',
-
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-          ),
-=======
       body: Center(
         child: SingleChildScrollView(
           child: _isLoading
@@ -334,7 +298,7 @@ class _ProfilPageState extends State<ProfilPage> {
             ),
           )
               : Center(child: Text('No user data available')),
->>>>>>> 8c3bd18a7fdda973a748335a15c2c77490d62772:lib/pages/authentification/profile.dart
+
         ),
       ),
     );
