@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:frontendcovoituragemobile/Services/CommentService.dart';
 import 'package:frontendcovoituragemobile/Services/FavoriteService.dart';
 import 'package:frontendcovoituragemobile/Services/UserService.dart';
-import 'package:frontendcovoituragemobile/pages/Favorite.dart';
+import 'package:frontendcovoituragemobile/pages/Favoris/Favorite.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,12 +37,13 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   bool _showForm = true;
   late String paymentMethod = "Cash";
   late int numberOfPassengers = 1;
-
   void updateRemainingSeats() {
     setState(() {
-      remainingSeats = (initialSeatsAvailable - numberOfPassengers) as int;
+      remainingSeats = initialSeatsAvailable - numberOfPassengers;
     });
   }
+
+
 
   void _calculateTotalPrice() {
     totalPrice = numberOfPassengers * (widget.offer['seatPrice'] as int);
@@ -80,25 +82,42 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   Future<void> _sendComment() async {
     final commentContent = _commentController.text;
     final userId = loggedInUserId;
+    final carId = widget.offer['_id'];
+
     if (userId != null) {
       try {
-        await CommentService.addComment(userId, widget.offer.id, commentContent);
+        await CommentService.addComment(userId, carId, commentContent);
         fetchComments();
         _commentController.clear();
       } catch (e) {
         print('Erreur lors de l\'ajout du commentaire: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur lors de l\'ajout du commentaire: $e'),
-            duration: Duration(seconds: 3),
-          ),
-        );
+        if (e is Exception) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erreur lors de l\'ajout du commentaire: $e'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Une erreur inattendue s\'est produite'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
       }
     } else {
       print('Aucun utilisateur connecté');
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Vous devez être connecté pour ajouter un commentaire'),
+          duration: Duration(seconds: 3),
+        ),
+      );
     }
   }
+
 
 
 
@@ -190,7 +209,12 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       );
 
       if (response.statusCode == 201) {
-      } else {
+        setState(() {
+          initialSeatsAvailable -= numberOfPassengers;
+          remainingSeats = initialSeatsAvailable;
+        });
+      }
+     else {
         final errorResponse = json.decode(response.body);
       }
     } catch (e) {
@@ -236,7 +260,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                 Center(
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.height * 0.5,
+                    height: MediaQuery.of(context).size.height * 0.3,
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.vertical(
@@ -556,6 +580,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
               ),
             ),
           ),
+
           Positioned(
             bottom: MediaQuery.of(context).size.height * 0.02,
             left: MediaQuery.of(context).size.width * 0.05,
@@ -587,7 +612,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: Text(
-                  'Make Reservation',
+                  'Make Request',
                   style: TextStyle(
                     color: remainingSeats == 0 ? Colors.grey : Colors.white,
                   ),
@@ -738,7 +763,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
               ),
               backgroundColor: Colors.white,
               title: const Text(
-                'Make Reservation',
+                'Make Request',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -888,9 +913,23 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                           ],
                         ),
                       )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
+                    : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Lottie.asset('assets/animations/cong.json', width: 150),
+                      SizedBox(height: 16),
+                      Text(
+                        'Congratulations',
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Color(0xFF009C77),
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic),
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           const Text(
                             'Status:',textAlign: TextAlign.center,
@@ -907,6 +946,10 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                           ),
                         ],
                       ),
+
+                    ],
+                  ),
+                )
               ),
               actions: <Widget>[
                 TextButton(

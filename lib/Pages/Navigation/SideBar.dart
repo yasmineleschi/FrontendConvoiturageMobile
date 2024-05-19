@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontendcovoituragemobile/pages/Favorite.dart';
+import 'package:frontendcovoituragemobile/pages/Favoris/Favorite.dart';
 import 'package:frontendcovoituragemobile/pages/Reservation/ReservationList.dart';
 import 'package:frontendcovoituragemobile/pages/offers/MyOffer.dart';
 import 'package:frontendcovoituragemobile/pages/Navigation/navigation_bar.dart';

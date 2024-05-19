@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Color(0xFF009C77),
         colorScheme: ColorScheme(
-          primary: Color(0xFF009C77), // Couleur verte
-          secondary: Color(0xFFFF9800), // Couleur orange
+          primary: Color(0xFF009C77),
+          secondary: Color(0xFFFF9800),
           surface: Color(0xFFECECEC),
           background: Color(0xFFECECEC),
           error: Colors.red,
@@ -39,17 +39,12 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-
-
       routes: {
         '/': (context) => AnimatedSplashScreen(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/home': (context) => NavigationBarScreen(),
         '/profile': (context) => ProfilPage(),
-
-
-
 
       },
     );

@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
+import 'package:frontendcovoituragemobile/Pages/Navigation/navigation_bar.dart';
 import 'package:frontendcovoituragemobile/pages/offers/AddTrajet.dart';
 import 'package:frontendcovoituragemobile/pages/offers/UpdaitOffre.dart';
 import 'package:frontendcovoituragemobile/pages/offers/DetailTrajet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:lottie/lottie.dart';
 import '../Navigation/SideBar.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -18,7 +20,6 @@ class MyOffersPage extends StatefulWidget {
 class _MyOffersPageState extends State<MyOffersPage> {
   List<dynamic> _offers = [];
   List<dynamic> filteredOffers = [];
-
 
   @override
   void initState() {
@@ -36,18 +37,12 @@ class _MyOffersPageState extends State<MyOffersPage> {
         setState(() {
           _getUserIDAndFetchOffers();
         });
-
-      } else {
-
-      }
-    } catch (e) {
-
-    }
+      } else {}
+    } catch (e) {}
   }
+
   List<dynamic> processOffers(List<dynamic> _offers) {
-
     _offers.sort((a, b) {
-
       if (a['status'] == 'Disponible') {
         return -1;
       } else if (b['status'] == 'Disponible') {
@@ -78,12 +73,9 @@ class _MyOffersPageState extends State<MyOffersPage> {
         },
       );
       if (response.statusCode == 200) {
-
         List<dynamic> fetchedOffers = json.decode(response.body);
 
-
         List<dynamic> sortedOffers = processOffers(fetchedOffers);
-
 
         setState(() {
           _offers = sortedOffers;
@@ -97,7 +89,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
     }
   }
 
-
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Disponible':
@@ -110,7 +101,6 @@ class _MyOffersPageState extends State<MyOffersPage> {
         return Colors.black;
     }
   }
-
 
   void _filterOffersByDestination(String destination) {
     if (destination.isEmpty) {
@@ -160,273 +150,341 @@ class _MyOffersPageState extends State<MyOffersPage> {
       ),
       drawer: SideBar(),
       body: Container(
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.6,
-                child: TextField(
-                  onChanged: (value) {
-                    _filterOffersByDestination(value);
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Enter destination...',
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none,
+        decoration: BoxDecoration(
+          color: Color(0xFFECECEC),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30.0),
+            topRight: Radius.circular(30.0),
+          ),
+        ),
+        child: filteredOffers.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Lottie.asset('assets/animations/location.json', width: 150),
+                    SizedBox(height: 16),
+                    Text(
+                      'No Offer Yet',
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic),
                     ),
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.search , color: Colors.black),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Color(0xFF009C77)),
+                      ),
                       onPressed: () {
-                        // Perform search action
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NavigationBarScreen(),
+                          ),
+                        );
                       },
+                      child: const Text(
+                        'Go Back',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  ),
+                  ],
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: TextField(
+                          onChanged: (value) {
+                            _filterOffersByDestination(value);
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Enter destination...',
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15.0, horizontal: 20.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: BorderSide.none,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.search, color: Colors.black),
+                              onPressed: () {
+                                // Perform search action
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: filteredOffers.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final offer = filteredOffers[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      OfferDetailPage(offer: offer),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.all(10),
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Color(0xFFFFFFFF),
+                                    Color(0xFFEBEBEB)
+                                  ],
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Text(
+                                              DateFormat('HH:mm').format(
+                                                  DateTime.parse(offer[
+                                                      'departureDateTime'])),
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              DateFormat('dd/MM/yyyy').format(
+                                                  DateTime.parse(offer[
+                                                      'departureDateTime'])),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              "Starting at",
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            Text(
+                                              '${offer['seatPrice']}/Dt ',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Price',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            Text(
+                                              '${offer['seatAvailable']} ',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Seat Available',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(),
+                                    SizedBox(height: 12),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              'assets/images/depart.png',
+                                              width: 14,
+                                              height: 14,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              '${offer['departureLocation']}',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              'assets/images/destination.png',
+                                              width: 14,
+                                              height: 14,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              '${offer['destinationLocation']}',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'Status :',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          '${offer['status']}',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: _getStatusColor(
+                                                offer['status']),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 12),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    UpdateOffrePage(
+                                                  offerId:
+                                                      offer['_id'].toString(),
+                                                  departureDateTime:
+                                                      offer['departureDateTime']
+                                                          .toString(),
+                                                  departureLocation:
+                                                      offer['departureLocation']
+                                                          .toString(),
+                                                  destinationLocation: offer[
+                                                          'destinationLocation']
+                                                      .toString(),
+                                                  seatPrice: offer['seatPrice']
+                                                      .toString(),
+                                                  seatAvailable:
+                                                      offer['seatAvailable']
+                                                          .toString(),
+                                                  model:
+                                                      offer['model'].toString(),
+                                                  matricule: offer['matricule']
+                                                      .toString(),
+                                                  status: offer['status']
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.edit,
+                                                  color: Colors.orangeAccent),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                'Edit',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.orangeAccent,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(width: 20),
+                                        GestureDetector(
+                                          onTap: () => deleteCar(offer['_id']),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.delete,
+                                                  color: Colors.red),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                'Delete',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredOffers.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final offer = filteredOffers[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => OfferDetailPage(offer: offer),
-                        ),
-                      );
-                    },
-                    child:Container(
-                      margin: EdgeInsets.all(10),
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: const LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Color(0xFFFFFFFF), Color(0xFFEBEBEB)],
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child:  Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                      DateFormat('HH:mm').format(DateTime.parse(offer['departureDateTime'])),
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-
-                                      ),
-                                    ),
-                                    Text(
-                                      DateFormat('dd/MM/yyyy').format(DateTime.parse(offer['departureDateTime'])),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.black,
-                                      ),
-
-                                    ),
-                                    Text(
-                                     "Starting at",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      ),
-
-                                    ),
-                                  ],
-                                ),
-
-                                Column(
-                                  children: [
-                                    Text(
-                                      '${offer['seatPrice']}/Dt ',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Price',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      '${offer['seatAvailable']} ',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Seat Available',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Divider(),
-                            SizedBox(height: 12),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Row(children: [
-
-                                  Image.asset(
-                                    'assets/images/depart.png',
-                                    width: 14,
-                                    height: 14,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    '${offer['departureLocation']}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],),
-
-                                SizedBox(height: 10),
-                                Row(children: [
-                                  Image.asset(
-                                    'assets/images/destination.png',
-                                    width: 14,
-                                    height: 14,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    '${offer['destinationLocation']}',
-
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                    ),
-                                  ),
-
-                                ],),
-
-                              ],
-                            ),
-
-                            Divider(),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                              Text(
-                                'Status :',
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.black,      fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                                SizedBox(width: 8),
-                              Text(
-                                '${offer['status']}',
-                                style: TextStyle(
-                                    fontSize: 12,
-
-                                    color: _getStatusColor(offer['status']),
-                                ),
-                              ),
-
-                            ],),
-                            SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => UpdateOffrePage(
-                                          offerId: offer['_id'].toString(),
-                                          departureDateTime: offer['departureDateTime'].toString(),
-                                          departureLocation: offer['departureLocation'].toString(),
-                                          destinationLocation: offer['destinationLocation'].toString(),
-                                          seatPrice: offer['seatPrice'].toString(),
-                                          seatAvailable: offer['seatAvailable'].toString(),
-                                          model: offer['model'].toString(),
-                                          matricule: offer['matricule'].toString(),
-                                          status: offer['status'].toString(),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.edit, color: Colors.orangeAccent),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Edit',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.orangeAccent,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: 20),
-                                GestureDetector(
-                                  onTap: () => deleteCar(offer['_id']),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.delete, color: Colors.red),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Delete',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

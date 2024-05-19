@@ -243,7 +243,20 @@ class _FavoriteListPageState extends State<FavoriteListPage> {
                                   },
                                 ),
                               ),
-
+                              Positioned(
+                                bottom:
+                                MediaQuery.of(context).size.height * 0.08,
+                                right: MediaQuery.of(context).size.width * 0.06,
+                                child: Text(
+                                  '${favorite['car']['seatPrice']}DT',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: _getStatusColor(
+                                        favorite['car']['status']),
+                                  ),
+                                ),
+                              ),
                               Positioned(
                                 bottom:
                                     MediaQuery.of(context).size.height * 0.03,
